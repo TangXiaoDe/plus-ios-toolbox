@@ -1,42 +1,23 @@
-#
-# Be sure to run `pod lib lint AiLiToolbox.podspec' to ensure this is a
-# valid spec before submitting.
-#
-# Any lines starting with a # are optional, but their use is encouraged
-# To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
-#
 
-Pod::Spec.new do |s|
-  s.name             = 'AiLiToolbox'
-  s.version          = '0.1.0'
-  s.summary          = 'A short description of AiLiToolbox.'
-
-# This description is used to generate tags and improve search results.
-#   * Think: What does it do? Why did you write it? What is the focus?
-#   * Try to keep it short, snappy and to the point.
-#   * Write the description between the DESC delimiters below.
-#   * Finally, don't worry about the indent, CocoaPods strips it!
-
-  s.description      = <<-DESC
-TODO: Add long description of the pod here.
+Pod::Spec.new do |spec|
+  spec.name             = 'AiLiToolbox'
+  spec.version          = '0.1.0'
+  spec.summary          = 'Simple toolbox.'
+  spec.description      = <<-DESC
+    * 该工具库实现了和ThinkSNS + 服务器相关的通讯协议
+    * 该工具库存储了开发实践中好用的相关函数
                        DESC
 
-  s.homepage         = 'https://github.com/447209844qq@gmail.com/AiLiToolbox'
-  # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
-  s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { '447209844qq@gmail.com' => '447209844qq@gmail.com' }
-  s.source           = { :git => 'https://github.com/447209844qq@gmail.com/AiLiToolbox.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+  spec.homepage         = 'https://github.com/zhiyicx/AiLiToolbox'
+  spec.license          = { :type => 'MIT', :file => 'LICENSE' }
+  spec.author           = { 'Lip Young' => 'mainbundle@gmail.com' }
 
-  s.ios.deployment_target = '8.0'
+  spec.source           = { :git => 'https://github.com/zhiyicx/AiLiToolbox.git', :tag => '0.1.0' }
+  spec.ios.deployment_target = '8.0'
 
-  s.source_files = 'AiLiToolbox/Classes/**/*'
-  
-  # s.resource_bundles = {
-  #   'AiLiToolbox' => ['AiLiToolbox/Assets/*.png']
-  # }
+  spec.default_subspecs = 'Toolbox'
+  spec.subspec 'Toolbox' do |toolbox|
+    toolbox.source_files = 'AiLiToolbox/Classes/*.{swift}'
+  end
 
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
 end

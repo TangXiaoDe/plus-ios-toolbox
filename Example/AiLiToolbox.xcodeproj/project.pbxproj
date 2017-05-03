@@ -7,12 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3631558E1EB9E3C30033AA5F /* TestsInt+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3631558D1EB9E3C30033AA5F /* TestsInt+Extension.swift */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		D7046FC5A59D2FF1FE94BB2F /* Pods_AiLiToolbox_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E88F27E8B3EE0068700D22 /* Pods_AiLiToolbox_Tests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		1A708507DE29AE47201966F6 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		3631558D1EB9E3C30033AA5F /* TestsInt+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TestsInt+Extension.swift"; sourceTree = "<group>"; };
 		5239DEF6F11A77340437EB2F /* Pods-AiLiToolbox_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AiLiToolbox_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AiLiToolbox_Tests/Pods-AiLiToolbox_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		584B02DF69BE0A3F1CA50DEB /* AiLiToolbox.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = AiLiToolbox.podspec; path = ../AiLiToolbox.podspec; sourceTree = "<group>"; };
 		607FACE51AFB9204008FA782 /* AiLiToolbox_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AiLiToolbox_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -58,6 +60,7 @@
 			isa = PBXGroup;
 			children = (
 				607FACEB1AFB9204008FA782 /* Tests.swift */,
+				3631558D1EB9E3C30033AA5F /* TestsInt+Extension.swift */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 			);
 			path = Tests;
@@ -130,7 +133,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 0720;
 				LastUpgradeCheck = 0820;
-				ORGANIZATIONNAME = CocoaPods;
+				ORGANIZATIONNAME = "AiLi Toolbox";
 				TargetAttributes = {
 					607FACE41AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
@@ -235,6 +238,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				607FACEC1AFB9204008FA782 /* Tests.swift in Sources */,
+				3631558E1EB9E3C30033AA5F /* TestsInt+Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -332,6 +336,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5239DEF6F11A77340437EB2F /* Pods-AiLiToolbox_Tests.debug.xcconfig */;
 			buildSettings = {
+				DEFINES_MODULE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -352,6 +357,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 69E0C390A84192C634AB84FE /* Pods-AiLiToolbox_Tests.release.xcconfig */;
 			buildSettings = {
+				DEFINES_MODULE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",

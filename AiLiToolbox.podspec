@@ -17,7 +17,7 @@ Pod::Spec.new do |spec|
 
   spec.default_subspecs = 'Toolbox'
   spec.subspec 'Toolbox' do |toolbox|
-    toolbox.source_files = 'AiLiToolbox/Classes/*.{swift}'
+    toolbox.source_files = 'AiLiToolbox/**/*.{swift}'
   end
 
 end

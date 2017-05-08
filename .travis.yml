@@ -6,3 +6,7 @@ xcode_scheme: AiLiToolbox-Example
 
 xcode_sdk: iOS 8.1
 podfile: Example/Podfile
+
+branches:
+  only:
+  - master

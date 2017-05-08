@@ -12,7 +12,7 @@ Pod::Spec.new do |spec|
   spec.license          = { :type => 'MIT', :file => 'LICENSE' }
   spec.author           = { 'Lip Young' => 'mainbundle@gmail.com' }
 
-  spec.source           = { :git => 'https://github.com/zhiyicx/AiLiToolbox.git'}
+  spec.source           = { :git => 'https://github.com/zhiyicx/AiLiToolbox.git', :tag => spec.version.to_s }
   spec.ios.deployment_target = '8.0'
 
   spec.default_subspecs = 'Toolbox'

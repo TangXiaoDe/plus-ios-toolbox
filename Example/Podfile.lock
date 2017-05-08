@@ -1,5 +1,7 @@
 PODS:
-  - AiLiToolbox (0.1.0)
+  - AiLiToolbox (0.1.0):
+    - AiLiToolbox/Toolbox (= 0.1.0)
+  - AiLiToolbox/Toolbox (0.1.0)
   - Alamofire (4.2.0)
   - Mockingjay (2.0.0):
     - Mockingjay/Core (= 2.0.0)
@@ -26,7 +28,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  AiLiToolbox: a9811debfe4c9e4621f2856c04076c36e1edb351
+  AiLiToolbox: a114fcbbecbd0714c12fa73ad7d5a1c4b73d6d8a
   Alamofire: aa2e09d871c9160ac53c90e83c68064a94e3dfbe
   Mockingjay: 7122a3fc0597aa63438e4cd9b71b7bc8aac05b87
   Nimble: 415e3aa3267e7bc2c96b05fa814ddea7bb686a29

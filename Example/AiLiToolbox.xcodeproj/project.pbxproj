@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		3631558E1EB9E3C30033AA5F /* TestsInt+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3631558D1EB9E3C30033AA5F /* TestsInt+Extension.swift */; };
-		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		D7046FC5A59D2FF1FE94BB2F /* Pods_AiLiToolbox_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E88F27E8B3EE0068700D22 /* Pods_AiLiToolbox_Tests.framework */; };
 /* End PBXBuildFile section */
 
@@ -19,7 +18,6 @@
 		584B02DF69BE0A3F1CA50DEB /* AiLiToolbox.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = AiLiToolbox.podspec; path = ../AiLiToolbox.podspec; sourceTree = "<group>"; };
 		607FACE51AFB9204008FA782 /* AiLiToolbox_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AiLiToolbox_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		6926D2F20AC42362DA5B0D02 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		69E0C390A84192C634AB84FE /* Pods-AiLiToolbox_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AiLiToolbox_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AiLiToolbox_Tests/Pods-AiLiToolbox_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		94E88F27E8B3EE0068700D22 /* Pods_AiLiToolbox_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AiLiToolbox_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -59,7 +57,6 @@
 		607FACE81AFB9204008FA782 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				607FACEB1AFB9204008FA782 /* Tests.swift */,
 				3631558D1EB9E3C30033AA5F /* TestsInt+Extension.swift */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 			);
@@ -237,7 +234,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				607FACEC1AFB9204008FA782 /* Tests.swift in Sources */,
 				3631558E1EB9E3C30033AA5F /* TestsInt+Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

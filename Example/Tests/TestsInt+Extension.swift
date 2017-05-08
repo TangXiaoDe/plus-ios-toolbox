@@ -8,7 +8,7 @@
 
 import Quick
 import Nimble
-@testable import AiLiToolbox
+import AiLiToolbox
 
 class TestsInt_ExtensionSpec: QuickSpec {
     override func spec() {

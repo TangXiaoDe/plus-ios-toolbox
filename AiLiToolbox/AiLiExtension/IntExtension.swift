@@ -10,7 +10,7 @@ import UIKit
 
 extension Int {
     /// 判断一个整数是否为 0 (为空)
-    var isEqualZero: Bool {
+    public var isEqualZero: Bool {
         return self == 0
     }
 }
@@ -18,7 +18,7 @@ extension Int {
 extension Array {
     /// 将数组转为 字符串
     /// 例如 [1, 2, 3] -> "1,2,3"
-    func convertToString() -> String? {
+    public func convertToString() -> String? {
         if self.isEmpty {
             return nil
         }

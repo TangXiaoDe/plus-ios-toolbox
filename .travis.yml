@@ -18,6 +18,7 @@ env:
 
 before_install:
 - gem install xcpretty --no-rdoc --no-ri --no-document --quiet
+- gem uninstall cocoapods -a
 - gem install cocoapods --pre --no-rdoc --no-ri --no-document --quiet
 - pod install --project-directory=Example
 script:

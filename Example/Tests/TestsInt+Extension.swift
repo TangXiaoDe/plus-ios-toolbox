@@ -14,7 +14,7 @@ class TestsInt_ExtensionSpec: QuickSpec {
     override func spec() {
         describe("需要一个字符串数字数组时") {
 
-            let numberStringArray = "1,2,3"
+            let numberStringArray = "1,1,1"
 
             it("能从数字数组转换后获得") {
                 let numbers = [1, 2, 3]

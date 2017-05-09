@@ -3,6 +3,7 @@ osx_image: xcode8.2
 language: objective-c # 决定构建工具
 podfile: Example/Podfile
 cache: cocoapods
+xcode_sdk: iphonesimulator10.1
 
 branches:
   only:
@@ -15,6 +16,7 @@ env:
     - XCODE_WORKSPACE=Example/AiLiToolbox.xcworkspace
   matrix:
     - SCHEME="AiLiToolbox-Example"
+    - TESTSCHEME="AiLiToolbox_Tests"
 
 before_install:
 - gem install xcpretty --no-rdoc --no-ri --no-document --quiet
@@ -25,6 +27,7 @@ script:
 - set -o pipefail
 - xcodebuild -workspace "$XCODE_WORKSPACE" -scheme "$SCHEME" -configuration Debug clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty -c
 - xcodebuild -workspace "$XCODE_WORKSPACE" -scheme "$SCHEME" -configuration Release clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty -c
+- xcodebuild clean build test -workspace "$XCODE_WORKSPACE" -scheme "$TESTSCHEME"
 - pod lib lint --no-clean
 after_success:
 - sleep 5

@@ -1,6 +1,6 @@
 # AiLiToolbox
 
-[![CI Status](http://img.shields.io/travis/447209844qq@gmail.com/AiLiToolbox.svg?style=flat)](https://travis-ci.org/447209844qq@gmail.com/AiLiToolbox)
+[![Build Status](https://travis-ci.org/zhiyicx/AiLiToolbox.svg?branch=master)](https://travis-ci.org/zhiyicx/AiLiToolbox)
 [![Version](https://img.shields.io/cocoapods/v/AiLiToolbox.svg?style=flat)](http://cocoapods.org/pods/AiLiToolbox)
 [![License](https://img.shields.io/cocoapods/l/AiLiToolbox.svg?style=flat)](http://cocoapods.org/pods/AiLiToolbox)
 [![Platform](https://img.shields.io/cocoapods/p/AiLiToolbox.svg?style=flat)](http://cocoapods.org/pods/AiLiToolbox)
@@ -22,7 +22,7 @@ pod "AiLiToolbox"
 
 ## Author
 
-447209844qq@gmail.com, 447209844qq@gmail.com
+<p align="center"><img src="https://github.com/zhiyicx/thinksns-plus/blob/master/.github/plus.png"></p>
 
 ## License
 

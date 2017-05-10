@@ -5,16 +5,17 @@
 [![License](https://img.shields.io/cocoapods/l/AiLiToolbox.svg?style=flat)](http://cocoapods.org/pods/AiLiToolbox)
 [![Platform](https://img.shields.io/cocoapods/p/AiLiToolbox.svg?style=flat)](http://cocoapods.org/pods/AiLiToolbox)
 
-## Example
+## 概述
 
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
+暂无
 
-## Requirements
+## 文档地址
+
+暂无,后续使用 cocoapodsdoc.
 
 ## Installation
 
-AiLiToolbox is available through [CocoaPods](http://cocoapods.org). To install
-it, simply add the following line to your Podfile:
+AiLiToolbox 支持使用[CocoaPods](http://cocoapods.org)安装.安装方式为修改`Podfile`文件:
 
 ```ruby
 pod "AiLiToolbox"
@@ -22,7 +23,7 @@ pod "AiLiToolbox"
 
 ## Author
 
-<p align="center"><img src="https://github.com/zhiyicx/thinksns-plus/blob/master/.github/plus.png"></p>
+<p align="center"><img src="http://oppt2zece.bkt.clouddn.com/plus.png"></p>
 
 ## License
 

@@ -50,5 +50,5 @@ script:
     fi
  
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash) -t 02d2fbfc-7578-4207-94e2-da1a18bee7f0
   - sleep 5

@@ -7,37 +7,33 @@
 //
 //  数据库管理类
 
-
 /// 时间类型
-///
-/// - simple: 个人主页
-/// 1天内显示 今\n天，
-/// 1天到2天显示 昨\n天，
-/// 2天以上显示月日如 24\n12月、09\n2 月，当月份小于 10 时，数字和月份之间有个空格
-///
-/// - normal: 动态列表时间戳格式转换
-/// 一分钟内显示一分钟
-/// 一小时内显示几分钟前
-/// 一天内显示几小时前
-/// 1天到2天显示昨天
-/// 2天到9天显示几天前
-/// 9天以上显示月日如（05-21）
-///
-/// - detail: 动态详情
-/// 一分钟内显示一分钟
-/// 一小时内显示几分钟前，
-/// 一天内显示几小时前，
-/// 1天到2天显示如（昨天 20:36），
-/// 2天到9天显示如（五天前 20：34），
-/// 9天以上显示如（02-28 19:15）
 public enum DateType {
+    /// - simple: 个人主页
+    /// - 1天内显示 今\n天，
+    /// - 1天到2天显示 昨\n天，
+    /// - 2天以上显示月日如 24\n12月、09\n2 月，当月份小于 10 时，数字和月份之间有个空格
     case simple
+    /// normal: 动态列表时间戳格式转换
+    /// - 一分钟内显示一分钟
+    /// - 一小时内显示几分钟前
+    /// - 一天内显示几小时前
+    /// - 1天到2天显示昨天
+    /// - 2天到9天显示几天前
+    /// - 9天以上显示月日如（05-21）
     case normal
+    /// 动态详情
+    /// - 一分钟内显示一分钟
+    /// - 一小时内显示几分钟前，
+    /// - 一天内显示几小时前，
+    /// - 1天到2天显示如（昨天 20:36），
+    /// - 2天到9天显示如（五天前 20：34），
+    /// - 9天以上显示如（02-28 19:15）
     case detail
 }
 
 public class TSDate: NSObject {
-    
+
     // MARK: - Lifecycle
     /// 日程表
     private let calendar = Calendar(identifier: .gregorian)
@@ -55,10 +51,10 @@ public class TSDate: NSObject {
     private var oneHour: Date
     /// 格式转换器
     private let formatter = DateFormatter()
-    
+
     /// 后台返回时间
     private var date = Date()
-    
+
     // MARK: - Lifecycle
     public override init() {
         now = Date()
@@ -68,15 +64,15 @@ public class TSDate: NSObject {
         oneMinute = calendar.date(byAdding: Calendar.Component.minute, value: -1, to: now, wrappingComponents: false)!
         oneHour = calendar.date(byAdding: Calendar.Component.hour, value: -1, to: now, wrappingComponents: false)!
     }
-    
+
     /// 用于测试的初始化
     convenience init(_ nowDate: Date) {
         self.init()
         now = nowDate
     }
-    
+
     // MARK: - Public
-    
+
     /// 转换成时间
     ///
     /// - Parameters:
@@ -96,7 +92,7 @@ public class TSDate: NSObject {
         }
         return dateString
     }
-    
+
     /// 转换成时间
     ///
     /// - Parameters:
@@ -107,9 +103,9 @@ public class TSDate: NSObject {
     //        let timeStampInt = Int(time.timeIntervalSince1970)
     //        return dateString(type, timeStamp: timeStampInt)
     //    }
-    
+
     // MARK: - Private
-    
+
     /// simple 类型的时间
     /// - Note:
     /// 个人主页
@@ -133,7 +129,7 @@ public class TSDate: NSObject {
         }
         return day + "\n\(month)月"
     }
-    
+
     /// normal 类型的时间
     ///
     /// - Note:
@@ -164,7 +160,7 @@ public class TSDate: NSObject {
         formatter.dateFormat = "MM-dd"
         return formatter.string(from: date)
     }
-    
+
     /// detail 类型的时间
     ///
     /// - Note:
@@ -196,37 +192,19 @@ public class TSDate: NSObject {
         formatter.dateFormat = "MM-dd HH:mm"
         return formatter.string(from: date)
     }
-    
+
     /// 是否早于某个时间
     private func isEarly(than compareDate: Date) -> Bool {
         return date < compareDate
     }
-    
+
     /// 是否晚于某个时间
     private func isLate(than compareDate: Date) -> Bool {
         return date >= compareDate
     }
-    
+
     /// 将 NSDate 转换成 Date
     private func convertToDate(_ nsDate: NSDate) -> Date {
         return Date(timeIntervalSince1970: nsDate.timeIntervalSince1970)
-    }
-}
-
-extension String {
-    /// 将时间格式转换为 date
-    public func convertToDate() -> NSDate {
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone(identifier: "GMT")
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        let date = dateFormatter.date(from: self)
-        return NSDate(timeIntervalSince1970: date!.timeIntervalSince1970)
-    }
-}
-
-extension Int {
-    /// 将时间戳转换成 date
-    public func convertToDate() -> NSDate {
-        return NSDate(timeIntervalSince1970: TimeInterval(self))
     }
 }

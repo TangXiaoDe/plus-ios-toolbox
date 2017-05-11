@@ -44,7 +44,7 @@ script:
     fi
 
   - if [ $RUN_TESTS == "YES" ]; then
-        xcodebuild clean build test -workspace "$WORKSPACE" -scheme "$SCHEME" -destination "$DESTINATION" -sdk iphonesimulator GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES GCC_GENERATE_TEST_COVERAGE_FILES=YES -configuration Debug ONLY_ACTIVE_ARCH=NO -enableCodeCoverage YES | xcpretty -c;
+        xcodebuild clean build test -workspace "$WORKSPACE" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO -enableCodeCoverage YES | xcpretty -c;
     else
         xcodebuild clean build -workspace "$WORKSPACE" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO | xcpretty -c;
     fi

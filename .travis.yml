@@ -44,11 +44,11 @@ script:
     fi
 
   - if [ $RUN_TESTS == "YES" ]; then
-        xcodebuild clean build test -workspace "$WORKSPACE" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO -enableCodeCoverage YES | xcpretty -c;
+        xcodebuild clean build test -workspace "$WORKSPACE" -sdk iphonesimulator -scheme "$SCHEME" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO -enableCodeCoverage YES | xcpretty -c;
     else
         xcodebuild clean build -workspace "$WORKSPACE" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO | xcpretty -c;
     fi
  
 after_success:
-  - bash <(curl -s https://codecov.io/bash) -cF ios
+  - bash <(curl -s https://codecov.io/bash)
   - sleep 5

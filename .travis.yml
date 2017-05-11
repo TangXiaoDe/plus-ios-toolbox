@@ -32,21 +32,23 @@ env:
 
 
 before_install:
-- gem install xcpretty --no-rdoc --no-ri --no-document --quiet
-- gem install cocoapods -v 1.2.0 --no-rdoc --no-ri --no-document --quiet
-- pod repo update
-- pod install --project-directory=Example
-script:
-- set -o pipefail
-- if [ $POD_LINT == "YES" ]; then
-   pod lib lint --no-clean;
-  fi
+  - gem install xcpretty --no-rdoc --no-ri --no-document --quiet
+  - gem install cocoapods -v 1.2.0 --no-rdoc --no-ri --no-document --quiet
+  - pod repo update
+  - pod install --project-directory=Example
 
-- if [ $RUN_TESTS == "YES" ]; then
-      xcodebuild clean build test -workspace "$WORKSPACE" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO | xcpretty -c;
-  else
-      xcodebuild clean build -workspace "$WORKSPACE" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO | xcpretty -c;
-  fi
+script:
+  - set -o pipefail
+  - if [ $POD_LINT == "YES" ]; then
+     pod lib lint --no-clean;
+    fi
+
+  - if [ $RUN_TESTS == "YES" ]; then
+        xcodebuild clean build test -workspace "$WORKSPACE" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO | xcpretty -c;
+    else
+        xcodebuild clean build -workspace "$WORKSPACE" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO | xcpretty -c;
+    fi
  
 after_success:
-- sleep 5
+  - bash <(curl -s https://codecov.io/bash)
+  - sleep 5

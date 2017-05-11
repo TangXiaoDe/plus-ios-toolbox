@@ -2,8 +2,7 @@
 
 [![Build Status](https://travis-ci.org/zhiyicx/AiLiToolbox.svg?branch=master)](https://travis-ci.org/zhiyicx/AiLiToolbox)
 [![Version](https://img.shields.io/cocoapods/v/AiLiToolbox.svg?style=flat)](http://cocoapods.org/pods/AiLiToolbox)
-[![License](https://img.shields.io/cocoapods/l/AiLiToolbox.svg?style=flat)](http://cocoapods.org/pods/AiLiToolbox)
-[![Platform](https://img.shields.io/cocoapods/p/AiLiToolbox.svg?style=flat)](http://cocoapods.org/pods/AiLiToolbox)
+[![codecov](https://codecov.io/gh/zhiyicx/AiLiToolbox/branch/master/graph/badge.svg)](https://codecov.io/gh/zhiyicx/AiLiToolbox)
 
 ## 概述
 

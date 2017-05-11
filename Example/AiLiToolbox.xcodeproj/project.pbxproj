@@ -333,10 +333,7 @@
 			baseConfigurationReference = 5239DEF6F11A77340437EB2F /* Pods-AiLiToolbox_Tests.debug.xcconfig */;
 			buildSettings = {
 				DEFINES_MODULE = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -354,10 +351,7 @@
 			baseConfigurationReference = 69E0C390A84192C634AB84FE /* Pods-AiLiToolbox_Tests.release.xcconfig */;
 			buildSettings = {
 				DEFINES_MODULE = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";

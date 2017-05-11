@@ -18,15 +18,15 @@ env:
     - WORKSPACE=Example/AiLiToolbox.xcworkspace
 
   matrix:
-    - DESTINATION="OS=8.1,name=iPhone 4s" SCHEME="$SCHEME" RUN_TESTS="NO" POD_LINT="YES"
-    - DESTINATION="OS=8.2,name=iPhone 5" SCHEME="$SCHEME" RUN_TESTS="NO" POD_LINT="NO"
-    - DESTINATION="OS=8.3,name=iPhone 5s" SCHEME="$SCHEME" RUN_TESTS="NO" POD_LINT="NO"
-    - DESTINATION="OS=8.4,name=iPhone 6" SCHEME="$SCHEME" RUN_TESTS="NO" POD_LINT="NO"
+    # - DESTINATION="OS=8.1,name=iPhone 4s" SCHEME="$SCHEME" RUN_TESTS="NO" POD_LINT="YES"
+    # - DESTINATION="OS=8.2,name=iPhone 5" SCHEME="$SCHEME" RUN_TESTS="NO" POD_LINT="NO"
+    # - DESTINATION="OS=8.3,name=iPhone 5s" SCHEME="$SCHEME" RUN_TESTS="NO" POD_LINT="NO"
+    # - DESTINATION="OS=8.4,name=iPhone 6" SCHEME="$SCHEME" RUN_TESTS="NO" POD_LINT="NO"
 
-    - DESTINATION="OS=9.0,name=iPhone 6 Plus" SCHEME="$SCHEME" RUN_TESTS="YES" POD_LINT="NO"
-    - DESTINATION="OS=9.1,name=iPhone 6s" SCHEME="$SCHEME" RUN_TESTS="YES" POD_LINT="NO"
-    - DESTINATION="OS=9.2,name=iPhone 6s Plus" SCHEME="$SCHEME" RUN_TESTS="YES" POD_LINT="NO"
-    - DESTINATION="OS=9.3,name=iPad Air 2" SCHEME="$SCHEME" RUN_TESTS="YES" POD_LINT="NO"
+    # - DESTINATION="OS=9.0,name=iPhone 6 Plus" SCHEME="$SCHEME" RUN_TESTS="YES" POD_LINT="NO"
+    # - DESTINATION="OS=9.1,name=iPhone 6s" SCHEME="$SCHEME" RUN_TESTS="YES" POD_LINT="NO"
+    # - DESTINATION="OS=9.2,name=iPhone 6s Plus" SCHEME="$SCHEME" RUN_TESTS="YES" POD_LINT="NO"
+    # - DESTINATION="OS=9.3,name=iPad Air 2" SCHEME="$SCHEME" RUN_TESTS="YES" POD_LINT="NO"
 
     - DESTINATION="OS=10.0,name=iPhone 6s" SCHEME="$SCHEME" RUN_TESTS="YES" POD_LINT="NO"
 
@@ -50,5 +50,5 @@ script:
     fi
  
 after_success:
-  - bash <(curl -s https://codecov.io/bash) -t 02d2fbfc-7578-4207-94e2-da1a18bee7f0
+  - bash <(curl -s https://codecov.io/bash) -cF ios
   - sleep 5

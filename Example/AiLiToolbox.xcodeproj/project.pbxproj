@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3631558E1EB9E3C30033AA5F /* TestsInt+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3631558D1EB9E3C30033AA5F /* TestsInt+Extension.swift */; };
+		8316D3C31EC4658F009A2BAC /* TestsDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8316D3C21EC4658F009A2BAC /* TestsDate.swift */; };
 		D7046FC5A59D2FF1FE94BB2F /* Pods_AiLiToolbox_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E88F27E8B3EE0068700D22 /* Pods_AiLiToolbox_Tests.framework */; };
 /* End PBXBuildFile section */
 
@@ -20,6 +21,7 @@
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6926D2F20AC42362DA5B0D02 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		69E0C390A84192C634AB84FE /* Pods-AiLiToolbox_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AiLiToolbox_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AiLiToolbox_Tests/Pods-AiLiToolbox_Tests.release.xcconfig"; sourceTree = "<group>"; };
+		8316D3C21EC4658F009A2BAC /* TestsDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestsDate.swift; sourceTree = "<group>"; };
 		94E88F27E8B3EE0068700D22 /* Pods_AiLiToolbox_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AiLiToolbox_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -58,6 +60,7 @@
 			isa = PBXGroup;
 			children = (
 				3631558D1EB9E3C30033AA5F /* TestsInt+Extension.swift */,
+				8316D3C21EC4658F009A2BAC /* TestsDate.swift */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 			);
 			path = Tests;
@@ -235,6 +238,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3631558E1EB9E3C30033AA5F /* TestsInt+Extension.swift in Sources */,
+				8316D3C31EC4658F009A2BAC /* TestsDate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

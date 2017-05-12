@@ -35,7 +35,7 @@ class TestsDate: QuickSpec {
         oneDay = formatter.date(from: "2017-05-12 00:04:30")!
         twoDay = formatter.date(from: "2017-05-11 00:04:30")!
         nineDay = formatter.date(from: "2017-05-09 10:04:30")!
-        nineDayMore = formatter.date(from: "2017-05-01 10:04:30")!
+        nineDayMore = formatter.date(from: "2016-10-01 10:04:30")!
     }
 
 }

@@ -10,7 +10,7 @@ import Quick
 import Nimble
 import AiLiToolbox
 
-class TestsInt_ExtensionSpec: QuickSpec {
+class TestsDataProcessSpec: QuickSpec {
     override func spec() {
         describe("需要一个字符串数字数组时") {
 
@@ -20,6 +20,12 @@ class TestsInt_ExtensionSpec: QuickSpec {
                 let numbers = [1, 2, 3]
                 let convertNumberStringArray = numbers.convertToString()
                 expect(convertNumberStringArray!) == numberStringArray
+            }
+
+            it("调用的数组为空,返回nil") {
+                let numbers: Array<Int> = []
+                let convertNumberStringArray = numbers.convertToString()
+                expect(convertNumberStringArray).to(beNil())
             }
         }
     }

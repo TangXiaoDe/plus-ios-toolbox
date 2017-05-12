@@ -7,17 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3631558E1EB9E3C30033AA5F /* TestsInt+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3631558D1EB9E3C30033AA5F /* TestsInt+Extension.swift */; };
 		8316D3CA1EC47313009A2BAC /* TestsDateSimple.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8316D3C91EC47313009A2BAC /* TestsDateSimple.swift */; };
 		833A52541EC544FE009C2E6E /* TestsDateNormal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 833A52531EC544FE009C2E6E /* TestsDateNormal.swift */; };
 		833A52561EC5451C009C2E6E /* TestsDateDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 833A52551EC5451C009C2E6E /* TestsDateDetail.swift */; };
 		833A52581EC549BB009C2E6E /* TestsDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 833A52571EC549BB009C2E6E /* TestsDate.swift */; };
+		83C7E0BF1EC563E100E810B1 /* TestsDataProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3631558D1EB9E3C30033AA5F /* TestsDataProcess.swift */; };
 		D7046FC5A59D2FF1FE94BB2F /* Pods_AiLiToolbox_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E88F27E8B3EE0068700D22 /* Pods_AiLiToolbox_Tests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		1A708507DE29AE47201966F6 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
-		3631558D1EB9E3C30033AA5F /* TestsInt+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TestsInt+Extension.swift"; sourceTree = "<group>"; };
+		3631558D1EB9E3C30033AA5F /* TestsDataProcess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestsDataProcess.swift; sourceTree = "<group>"; };
 		5239DEF6F11A77340437EB2F /* Pods-AiLiToolbox_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AiLiToolbox_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AiLiToolbox_Tests/Pods-AiLiToolbox_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		584B02DF69BE0A3F1CA50DEB /* AiLiToolbox.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = AiLiToolbox.podspec; path = ../AiLiToolbox.podspec; sourceTree = "<group>"; };
 		607FACE51AFB9204008FA782 /* AiLiToolbox_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AiLiToolbox_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -65,8 +65,8 @@
 		607FACE81AFB9204008FA782 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				3631558D1EB9E3C30033AA5F /* TestsInt+Extension.swift */,
 				8316D3C81EC47313009A2BAC /* TSDate */,
+				3631558D1EB9E3C30033AA5F /* TestsDataProcess.swift */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 			);
 			path = Tests;
@@ -254,9 +254,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				83C7E0BF1EC563E100E810B1 /* TestsDataProcess.swift in Sources */,
 				833A52561EC5451C009C2E6E /* TestsDateDetail.swift in Sources */,
 				833A52541EC544FE009C2E6E /* TestsDateNormal.swift in Sources */,
-				3631558E1EB9E3C30033AA5F /* TestsInt+Extension.swift in Sources */,
 				833A52581EC549BB009C2E6E /* TestsDate.swift in Sources */,
 				8316D3CA1EC47313009A2BAC /* TestsDateSimple.swift in Sources */,
 			);
@@ -357,10 +357,7 @@
 			baseConfigurationReference = 5239DEF6F11A77340437EB2F /* Pods-AiLiToolbox_Tests.debug.xcconfig */;
 			buildSettings = {
 				DEFINES_MODULE = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -378,10 +375,7 @@
 			baseConfigurationReference = 69E0C390A84192C634AB84FE /* Pods-AiLiToolbox_Tests.release.xcconfig */;
 			buildSettings = {
 				DEFINES_MODULE = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";

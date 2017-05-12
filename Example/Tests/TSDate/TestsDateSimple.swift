@@ -11,8 +11,9 @@ import Quick
 import Nimble
 import AiLiToolbox
 
-class TestsDate: QuickSpec {
+class TestsDateSimple: QuickSpec {
 
+    // MARK: - 
     override func spec() {
         describe("传入一个时间戳") {
             let numberStringArray = "1,2,3"

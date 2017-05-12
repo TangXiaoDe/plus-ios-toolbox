@@ -27,7 +27,15 @@ class TestsDate: QuickSpec {
 
     /// 重置时间
     func resetTimes() {
-        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "YYYY-MM-dd HH:mm:ss"
+        now = formatter.date(from: "2017-05-12 10:04:30")!
+        oneMinute = formatter.date(from: "2017-05-12 10:03:35")!
+        oneHour = formatter.date(from: "2017-05-12 9:05:30")!
+        oneDay = formatter.date(from: "2017-05-12 00:04:30")!
+        twoDay = formatter.date(from: "2017-05-11 00:04:30")!
+        nineDay = formatter.date(from: "2017-05-09 10:04:30")!
+        nineDayMore = formatter.date(from: "2017-05-01 10:04:30")!
     }
 
 }

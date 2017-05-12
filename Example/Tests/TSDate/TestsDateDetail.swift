@@ -7,6 +7,7 @@
 //
 //  TSDate 的测试类
 
+import Quick
 import Nimble
 import AiLiToolbox
 

@@ -65,6 +65,18 @@ public class TSDate: NSObject {
         oneHour = calendar.date(byAdding: Calendar.Component.hour, value: -1, to: now, wrappingComponents: false)!
     }
 
+    /// 用于测试的初始化方法
+    ///
+    /// - Parameter now: 作为“现在”标准的时间
+    public init(now: Date) {
+        self.now = now
+        today = calendar.startOfDay(for: now)
+        yesterday = calendar.date(byAdding: Calendar.Component.day, value: -1, to: today, wrappingComponents: false)!
+        nightday = calendar.date(byAdding: Calendar.Component.day, value: -9, to: today, wrappingComponents: false)!
+        oneMinute = calendar.date(byAdding: Calendar.Component.minute, value: -1, to: now, wrappingComponents: false)!
+        oneHour = calendar.date(byAdding: Calendar.Component.hour, value: -1, to: now, wrappingComponents: false)!
+    }
+
     /// 用于测试的初始化
     convenience init(_ nowDate: Date) {
         self.init()

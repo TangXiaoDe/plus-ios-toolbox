@@ -7,6 +7,8 @@
 //
 
 import Quick
+import Nimble
+import AiLiToolbox
 
 class TestsDate: QuickSpec {
 
@@ -36,6 +38,17 @@ class TestsDate: QuickSpec {
         twoDay = formatter.date(from: "2017-05-11 00:04:30")!
         nineDay = formatter.date(from: "2017-05-09 10:04:30")!
         nineDayMore = formatter.date(from: "2016-10-01 10:04:30")!
+    }
+
+    override func spec() {
+        describe("调用 TSDate 的 convince init() 方法") {
+
+            let aDete = TSDate()
+
+            it("创建成功") {
+                expect(aDete).to(beAKindOf(TSDate.self))
+            }
+        }
     }
 
 }

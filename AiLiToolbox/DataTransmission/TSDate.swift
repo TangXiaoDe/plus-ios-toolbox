@@ -40,15 +40,15 @@ public class TSDate: NSObject {
     /// 当前时间
     private var now: Date
     /// 当天零点
-    private var today: Date
+    private var today = Date()
     /// 昨天零点
-    private var yesterday: Date
+    private var yesterday = Date()
     /// 9 天前
-    private var nightday: Date
+    private var nightday = Date()
     /// 一分钟前
-    private var oneMinute: Date
+    private var oneMinute = Date()
     /// 一小时前
-    private var oneHour: Date
+    private var oneHour = Date()
     /// 格式转换器
     private let formatter = DateFormatter()
 
@@ -56,13 +56,8 @@ public class TSDate: NSObject {
     private var date = Date()
 
     // MARK: - Lifecycle
-    public override init() {
-        now = Date()
-        today = calendar.startOfDay(for: now)
-        yesterday = calendar.date(byAdding: Calendar.Component.day, value: -1, to: today, wrappingComponents: false)!
-        nightday = calendar.date(byAdding: Calendar.Component.day, value: -9, to: today, wrappingComponents: false)!
-        oneMinute = calendar.date(byAdding: Calendar.Component.minute, value: -1, to: now, wrappingComponents: false)!
-        oneHour = calendar.date(byAdding: Calendar.Component.hour, value: -1, to: now, wrappingComponents: false)!
+    public override convenience init() {
+        self.init(now: Date())
     }
 
     /// 用于测试的初始化方法
@@ -75,12 +70,6 @@ public class TSDate: NSObject {
         nightday = calendar.date(byAdding: Calendar.Component.day, value: -9, to: today, wrappingComponents: false)!
         oneMinute = calendar.date(byAdding: Calendar.Component.minute, value: -1, to: now, wrappingComponents: false)!
         oneHour = calendar.date(byAdding: Calendar.Component.hour, value: -1, to: now, wrappingComponents: false)!
-    }
-
-    /// 用于测试的初始化
-    convenience init(_ nowDate: Date) {
-        self.init()
-        now = nowDate
     }
 
     // MARK: - Public

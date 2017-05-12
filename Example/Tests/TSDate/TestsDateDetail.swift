@@ -12,7 +12,7 @@ import Nimble
 import AiLiToolbox
 
 class TestsDateDetail: TestsDate {
-    
+
     override func spec() {
         resetTimes()
         describe("传入一天之内的时间") {

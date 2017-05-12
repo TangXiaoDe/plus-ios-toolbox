@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		3631558E1EB9E3C30033AA5F /* TestsInt+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3631558D1EB9E3C30033AA5F /* TestsInt+Extension.swift */; };
 		8316D3CA1EC47313009A2BAC /* TestsDateSimple.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8316D3C91EC47313009A2BAC /* TestsDateSimple.swift */; };
+		833A52541EC544FE009C2E6E /* TestsDateNormal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 833A52531EC544FE009C2E6E /* TestsDateNormal.swift */; };
+		833A52561EC5451C009C2E6E /* TestsDateDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 833A52551EC5451C009C2E6E /* TestsDateDetail.swift */; };
 		D7046FC5A59D2FF1FE94BB2F /* Pods_AiLiToolbox_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E88F27E8B3EE0068700D22 /* Pods_AiLiToolbox_Tests.framework */; };
 /* End PBXBuildFile section */
 
@@ -22,6 +24,8 @@
 		6926D2F20AC42362DA5B0D02 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		69E0C390A84192C634AB84FE /* Pods-AiLiToolbox_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AiLiToolbox_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AiLiToolbox_Tests/Pods-AiLiToolbox_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		8316D3C91EC47313009A2BAC /* TestsDateSimple.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestsDateSimple.swift; sourceTree = "<group>"; };
+		833A52531EC544FE009C2E6E /* TestsDateNormal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestsDateNormal.swift; sourceTree = "<group>"; };
+		833A52551EC5451C009C2E6E /* TestsDateDetail.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestsDateDetail.swift; sourceTree = "<group>"; };
 		94E88F27E8B3EE0068700D22 /* Pods_AiLiToolbox_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AiLiToolbox_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -97,6 +101,8 @@
 			isa = PBXGroup;
 			children = (
 				8316D3C91EC47313009A2BAC /* TestsDateSimple.swift */,
+				833A52531EC544FE009C2E6E /* TestsDateNormal.swift */,
+				833A52551EC5451C009C2E6E /* TestsDateDetail.swift */,
 			);
 			path = TSDate;
 			sourceTree = "<group>";
@@ -245,6 +251,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				833A52561EC5451C009C2E6E /* TestsDateDetail.swift in Sources */,
+				833A52541EC544FE009C2E6E /* TestsDateNormal.swift in Sources */,
 				3631558E1EB9E3C30033AA5F /* TestsInt+Extension.swift in Sources */,
 				8316D3CA1EC47313009A2BAC /* TestsDateSimple.swift in Sources */,
 			);

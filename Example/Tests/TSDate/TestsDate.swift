@@ -1,15 +1,13 @@
 //
-//  TestsDateDetail.swift
+//  TestsDate.swift
 //  AiLiToolbox
 //
 //  Created by GorCat on 2017/5/12.
 //  Copyright © 2017年 AiLi Toolbox. All rights reserved.
 //
-//  TSDate 的测试类
 
-import Nimble
-import AiLiToolbox
+import Quick
 
-class TestsDateDetail: TestsDate {
+class TestsDate: QuickSpec {
 
 }

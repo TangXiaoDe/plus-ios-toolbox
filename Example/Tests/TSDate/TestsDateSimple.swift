@@ -7,11 +7,10 @@
 //
 //  TSDate 的测试类
 
-import Quick
 import Nimble
 import AiLiToolbox
 
-class TestsDateSimple: QuickSpec {
+class TestsDateSimple: TestsDate {
 
     override func spec() {
         describe("传入一个时间戳") {

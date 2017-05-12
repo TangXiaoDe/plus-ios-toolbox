@@ -7,10 +7,9 @@
 //
 //  TSDate 的测试类
 
-import Quick
 import Nimble
 import AiLiToolbox
 
-class TestsDateNormal: QuickSpec {
+class TestsDateNormal: TestsDate {
 
 }

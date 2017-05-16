@@ -15,6 +15,9 @@ Pod::Spec.new do |spec|
   spec.source           = { :git => 'https://github.com/zhiyicx/AiLiToolbox.git', :tag => spec.version.to_s }
   spec.ios.deployment_target = '8.0'
 
+  spec.dependency 'Alamofire', '4.2.0'
+  spec.dependency 'SwiftyJSON', '3.1.3'
+
   spec.default_subspecs = 'Toolbox'
   spec.subspec 'Toolbox' do |toolbox|
     toolbox.source_files = 'AiLiToolbox/**/*.{swift}'

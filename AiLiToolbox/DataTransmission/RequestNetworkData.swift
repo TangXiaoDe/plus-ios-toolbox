@@ -14,7 +14,9 @@ public enum RquestNetworkDataError: Error {
     case uninitialized
 }
 
-class RequestNetworkData: NSObject {
+public let kRequestNetworkDataErrorDomain = "com.zhiyicx.ios.error.network"
+
+public class RequestNetworkData: NSObject {
     private var rootURL: String?
     private var rootParameter: Dictionary<String, Any>?
     private let networkErrorInfo: String = "网络异常，请检查网络连接"
@@ -22,7 +24,7 @@ class RequestNetworkData: NSObject {
     private var authorization: String?
     private override init() {}
 
-    static let sharedInstance = RequestNetworkData()
+    public static let share = RequestNetworkData()
     /// 配置是否显示日志信息,默认是关闭的
     ///
     /// - Note: 开启后,每次网络请求都会在控制台打印请求数据和请求结果
@@ -39,7 +41,7 @@ class RequestNetworkData: NSObject {
     ///
     /// - Parameter rootURL: 根地址字符串
     /// - Note: 设置后会导致所有的请求都依照该地址发起
-    public func configRootURL(rootURL: String) {
+    public func configRootURL(rootURL: String?) {
         self.rootURL = rootURL
     }
 
@@ -53,7 +55,7 @@ class RequestNetworkData: NSObject {
     /// 配置请求的授权口令
     ///
     /// - Note: 配置后,每次请求的都会携带该参数
-    public func configAuthorization(_ authorization: String) {
+    public func configAuthorization(_ authorization: String?) {
         self.authorization = authorization
     }
 
@@ -69,12 +71,39 @@ class RequestNetworkData: NSObject {
     ///   - responseData: 如果响应数据`responseData`的 key 是`com.zhiyicx.ios.error.network` 时,错误信息转换为`NSError`格式返回
     /// - Throws: 错误状态,如果未成功配置根地址会抛错
     public func textRequest(method: HTTPMethod, path: String?, parameter: Dictionary<String, Any>?, complete: @escaping (_ responseData: Dictionary<String, Any>, _ responseStatus: Bool?) -> Void) throws {
+
+        let (coustomHeaders, requestPath, parameters) = try processParameters(self.authorization, path, parameter)
+
+        if self.isShowLog == true {
+            let authorization: String = self.authorization ?? "nil"
+            print("\nRootURL:\(requestPath)\nAuthorization:" + (authorization) + "\nRequestMethod:\(method)\nParameters:\n\(parameters)\n")
+        }
+
+        alamofireManager.request(requestPath, method: method, parameters: parameters, encoding: JSONEncoding.default, headers: coustomHeaders).responseJSON { [unowned self] response in
+            if self.isShowLog == true {
+                print("http respond info \(response)")
+            }
+            guard response.result.isSuccess else {
+                complete([kRequestNetworkDataErrorDomain: response.result.error as! NSError], false)
+                return
+            }
+            let responseAllData = response.result.value as! Dictionary<String, Any>
+            // 当服务器响应 statusCode 在 200 ~ 300 间时,处理为正确
+            guard response.response!.statusCode >= 200 && response.response!.statusCode < 300 else {
+                complete(responseAllData, false)
+                return
+            }
+            complete(responseAllData, true)
+        }
+    }
+
+    private func processParameters(_ authorization: String?, _ path: String?, _ parameter: Dictionary<String, Any>?) throws -> (HTTPHeaders?, String, Dictionary<String, Any>?) {
         guard let rootURL = self.rootURL else {
             throw RquestNetworkDataError.uninitialized
         }
 
         var coustomHeaders: HTTPHeaders? = nil
-        if let authorization = self.authorization {
+        if let authorization = authorization {
             let token = "Bearer " + authorization
             coustomHeaders = ["Authorization": token]
         }
@@ -86,25 +115,17 @@ class RequestNetworkData: NSObject {
             requestPath = rootURL
         }
 
-        if isShowLog == true {
-            print("\nRootURL:\(requestPath)\nAuthorization:" + (authorization ?? "nil") + "\nRequestMethod:\(method)\nParameters:\n\(parameter)\n")
+        var parameters: Dictionary<String, Any> = [String: Any]()
+        if let rootParameter = rootParameter {
+            for (key, value) in rootParameter {
+                parameters.updateValue(value, forKey: key)
+            }
         }
-
-        alamofireManager.request(requestPath, method: method, parameters: parameter, encoding: JSONEncoding.default, headers: coustomHeaders).responseJSON { [unowned self] response in
-            if self.isShowLog == true {
-                print("http respond info \(response)")
+        if let parameter = parameter {
+            for (key, value) in parameter {
+                parameters.updateValue(value, forKey: key)
             }
-            guard response.result.isSuccess else {
-                complete(["com.zhiyicx.ios.error.network": response.result.error as! NSError], false)
-                return
-            }
-            let responseAllData = response.result.value as! Dictionary<String, Any>
-            // 当服务器响应 statusCode 在 200 ~ 300 间时,处理为正确
-            guard response.response!.statusCode >= 200 && response.response!.statusCode < 300 else {
-                complete(responseAllData, false)
-                return
-            }
-            complete(responseAllData, true)
         }
+        return (coustomHeaders, requestPath, parameters)
     }
 }

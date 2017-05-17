@@ -12,5 +12,13 @@ import Mockingjay
 import AiLiToolbox
 
 class TestsRequestNetworkDataSpec: QuickSpec {
-    
+    private let rootUrl = "http://example.mock.com"
+    override func spec() {
+        beforeEach {
+            
+        }
+        describe("") {
+            
+        }
+    }
 }

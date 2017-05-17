@@ -14,7 +14,7 @@ public enum RquestNetworkDataError: Error {
     case uninitialized
 }
 
-class RquestNetworkData: NSObject {
+class RequestNetworkData: NSObject {
     private var rootURL: String?
     private var rootParameter: Dictionary<String, Any>?
     private let networkErrorInfo: String = "网络异常，请检查网络连接"
@@ -22,7 +22,7 @@ class RquestNetworkData: NSObject {
     private var authorization: String?
     private override init() {}
 
-    static let sharedInstance = RquestNetworkData()
+    static let sharedInstance = RequestNetworkData()
     /// 配置是否显示日志信息,默认是关闭的
     ///
     /// - Note: 开启后,每次网络请求都会在控制台打印请求数据和请求结果

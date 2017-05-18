@@ -14,6 +14,9 @@ public enum RquestNetworkDataError: Error {
     case uninitialized
 }
 
+/// 服务器响应数据
+public typealias NetworkResponse = (responseData: Dictionary<String, Any>?, error: NSError?)
+
 public let kRequestNetworkDataErrorDomain = "com.zhiyicx.ios.error.network"
 
 public class RequestNetworkData: NSObject {
@@ -70,7 +73,7 @@ public class RequestNetworkData: NSObject {
     ///   - responseStatus: 通过是否返回 responseStatus 判断是否请求成功,
     ///   - responseData: 如果响应数据`responseData`的 key 是`com.zhiyicx.ios.error.network` 时,错误信息转换为`NSError`格式返回
     /// - Throws: 错误状态,如果未成功配置根地址会抛错
-    public func textRequest(method: HTTPMethod, path: String?, parameter: Dictionary<String, Any>?, complete: @escaping (_ responseData: Dictionary<String, Any>, _ responseStatus: Bool?) -> Void) throws {
+    public func textRequest(method: HTTPMethod, path: String?, parameter: Dictionary<String, Any>?, complete: @escaping (_ responseData: NetworkResponse, _ responseStatus: Bool?) -> Void) throws {
 
         let (coustomHeaders, requestPath, parameters) = try processParameters(self.authorization, path, parameter)
 
@@ -84,16 +87,18 @@ public class RequestNetworkData: NSObject {
                 print("http respond info \(response)")
             }
             guard response.result.isSuccess else {
-                complete([kRequestNetworkDataErrorDomain: response.result.error as! NSError], false)
+                let netwoekResponse = NetworkResponse(responseData: nil, error: response.result.error as? NSError)
+                complete(netwoekResponse, false)
                 return
             }
             let responseAllData = response.result.value as! Dictionary<String, Any>
+            let netwoekResponse = NetworkResponse(responseData: responseAllData, error: nil)
             // 当服务器响应 statusCode 在 200 ~ 300 间时,处理为正确
             guard response.response!.statusCode >= 200 && response.response!.statusCode < 300 else {
-                complete(responseAllData, false)
+                complete(netwoekResponse, false)
                 return
             }
-            complete(responseAllData, true)
+            complete(netwoekResponse, true)
         }
     }
 

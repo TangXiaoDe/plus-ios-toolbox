@@ -21,8 +21,6 @@ public let kRequestNetworkDataErrorDomain = "com.zhiyicx.ios.error.network"
 
 public class RequestNetworkData: NSObject {
     private var rootURL: String?
-    private var rootParameter: Dictionary<String, Any>?
-    private let networkErrorInfo: String = "网络异常，请检查网络连接"
     private let textRequestTimeoutInterval = 10
     private var authorization: String?
     private override init() {}
@@ -48,13 +46,6 @@ public class RequestNetworkData: NSObject {
         self.rootURL = rootURL
     }
 
-    /// 配置请求的根参数
-    ///
-    /// - Note: 配置后,每次请求的请求体都会携带该参数
-    public func configRootParameter(rootParameter: Dictionary<String, Any>) {
-        self.rootParameter = rootParameter
-    }
-
     /// 配置请求的授权口令
     ///
     /// - Note: 配置后,每次请求的都会携带该参数
@@ -75,14 +66,14 @@ public class RequestNetworkData: NSObject {
     /// - Throws: 错误状态,如果未成功配置根地址会抛错
     public func textRequest(method: HTTPMethod, path: String?, parameter: Dictionary<String, Any>?, complete: @escaping (_ responseData: NetworkResponse, _ responseStatus: Bool?) -> Void) throws {
 
-        let (coustomHeaders, requestPath, parameters) = try processParameters(self.authorization, path, parameter)
+        let (coustomHeaders, requestPath) = try processParameters(self.authorization, path)
 
         if self.isShowLog == true {
             let authorization: String = self.authorization ?? "nil"
-            print("\nRootURL:\(requestPath)\nAuthorization:" + (authorization) + "\nRequestMethod:\(method)\nParameters:\n\(parameters)\n")
+            print("\nRootURL:\(requestPath)\nAuthorization:" + (authorization) + "\nRequestMethod:\(method)\nParameters:\n\(parameter)\n")
         }
 
-        alamofireManager.request(requestPath, method: method, parameters: parameters, encoding: JSONEncoding.default, headers: coustomHeaders).responseJSON { [unowned self] response in
+        alamofireManager.request(requestPath, method: method, parameters: parameter, encoding: JSONEncoding.default, headers: coustomHeaders).responseJSON { [unowned self] response in
             if self.isShowLog == true {
                 print("http respond info \(response)")
             }
@@ -102,7 +93,7 @@ public class RequestNetworkData: NSObject {
         }
     }
 
-    private func processParameters(_ authorization: String?, _ path: String?, _ parameter: Dictionary<String, Any>?) throws -> (HTTPHeaders?, String, Dictionary<String, Any>?) {
+    private func processParameters(_ authorization: String?, _ path: String?) throws -> (HTTPHeaders?, String) {
         guard let rootURL = self.rootURL else {
             throw RquestNetworkDataError.uninitialized
         }
@@ -119,18 +110,6 @@ public class RequestNetworkData: NSObject {
         } else {
             requestPath = rootURL
         }
-
-        var parameters: Dictionary<String, Any> = [String: Any]()
-        if let rootParameter = rootParameter {
-            for (key, value) in rootParameter {
-                parameters.updateValue(value, forKey: key)
-            }
-        }
-        if let parameter = parameter {
-            for (key, value) in parameter {
-                parameters.updateValue(value, forKey: key)
-            }
-        }
-        return (coustomHeaders, requestPath, parameters)
+        return (coustomHeaders, requestPath)
     }
 }

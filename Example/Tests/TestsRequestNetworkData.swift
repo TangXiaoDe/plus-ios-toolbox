@@ -45,17 +45,6 @@ class TestsRequestNetworkDataSpec: QuickSpec {
             }
 
             context("配置情况", {
-                it("配置了根参数,请求参数会携带根参数") {
-                    RequestNetworkData.share.configRootParameter(rootParameter: ["someKey": "someValue"])
-                    /// 暂时没有办法使用 `Mockingjay` 单独拦截请求参数内容,暂时直接通过
-                    /// 请求的参数会和根参数合并
-                    var result: Bool?
-                    try! RequestNetworkData.share.textRequest(method: .get, path: "mock", parameter: ["key": "value"], complete: { (requestData, results) in
-                        result = results
-                    })
-                    expect(result).toEventually(beNil(), timeout: 1, pollInterval: 0.3)
-                    expect(true).to(beTrue())
-                }
                 it("配置了口令,请求头会携带口令") {
                     RequestNetworkData.share.configAuthorization("token")
                     /// 暂时没有办法使用 `Mockingjay` 单独拦截请求头内容,暂时直接通过

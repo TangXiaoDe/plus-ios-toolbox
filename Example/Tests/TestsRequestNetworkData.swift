@@ -79,7 +79,7 @@ class TestsRequestNetworkDataSpec: QuickSpec {
                         result = results
                     })
 
-                    expect(networkResponse.responseData?["key"] as? String).toEventually(equal("value"), timeout: 1, pollInterval: 0.3)
+                    expect((networkResponse.responseData as? Dictionary<String, Any>)?["key"] as? String).toEventually(equal("value"), timeout: 1, pollInterval: 0.3)
                     expect(result).toEventually(beTrue(), timeout: 1, pollInterval: 0.3)
                 }
                 it("处理请求相关错误") {
@@ -104,7 +104,7 @@ class TestsRequestNetworkDataSpec: QuickSpec {
                         result = results
                     })
 
-                    expect(networkResponse.responseData?["key"] as? String).toEventually(equal("value"), timeout: 1, pollInterval: 0.3)
+                    expect((networkResponse.responseData as? Dictionary<String, Any>)?["key"] as? String).toEventually(equal("value"), timeout: 1, pollInterval: 0.3)
                     expect(result).toNotEventually(beTrue(), timeout: 1, pollInterval: 0.3)
                 }
             })

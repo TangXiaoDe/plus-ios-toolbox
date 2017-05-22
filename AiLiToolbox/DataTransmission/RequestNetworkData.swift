@@ -64,11 +64,9 @@ public class RequestNetworkData: NSObject {
     ///   - path: 请求路径,拼接在根路径后
     ///   - parameter: 请求参数
     ///   - complete: 请求结果
-    /// - Note:
-    ///   - responseStatus: 通过是否返回 responseStatus 判断是否请求成功,
-    ///   - responseData: 如果响应数据`responseData`的 key 是`com.zhiyicx.ios.error.network` 时,错误信息转换为`NSError`格式返回
+    /// - Note: 当服务响应错误时,返回值 NetworkResponse 为空,具体错误信息控制台会打印
     /// - Throws: 错误状态,如果未成功配置根地址会抛错
-    public func textRequest(method: HTTPMethod, path: String?, parameter: Dictionary<String, Any>?, complete: @escaping (_ responseData: NetworkResponse, _ responseStatus: Bool?) -> Void) throws {
+    public func textRequest(method: HTTPMethod, path: String?, parameter: Dictionary<String, Any>?, complete: @escaping (_ responseData: NetworkResponse, _ responseStatus: Bool) -> Void) throws {
 
         let (coustomHeaders, requestPath) = try processParameters(self.authorization, path)
 
@@ -81,17 +79,16 @@ public class RequestNetworkData: NSObject {
             if self.isShowLog == true {
                 print("http respond info \(response)")
             }
-            guard response.result.isSuccess else {
-                complete(nil, false)
-                return
+            if let error = response.result.error {
+                print("http respond error \(error)")
             }
-            let responseData = response.result.value
-            // 当服务器响应 statusCode 在 200 ~ 300 间时,处理为正确
-            guard response.response!.statusCode >= 200 && response.response!.statusCode < 300 else {
-                complete(responseData, false)
-                return
+            var responseStatus: Bool = false
+            if let response = response.response {
+                if response.statusCode >= 200 && response.statusCode < 300 {
+                    responseStatus = true
+                }
             }
-            complete(responseData, true)
+            complete(response.result.value, responseStatus)
         }
     }
 

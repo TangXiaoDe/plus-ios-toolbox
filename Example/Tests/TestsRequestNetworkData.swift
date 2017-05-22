@@ -83,14 +83,19 @@ class TestsRequestNetworkDataSpec: QuickSpec {
                     expect((networkResponse as? Dictionary<String, Any>)?["key"] as? String).toEventually(equal("value"), timeout: 1, pollInterval: 0.3)
                     expect(result).toEventually(beTrue(), timeout: 1, pollInterval: 0.3)
                 }
-                // [等待处理] 服务获取到错误后,会根据断言处理,暂未测试 2017年05月22日10:35:06
-//                it("处理请求相关错误") {
-//                    self.stub(everything, failure(NSError(domain: "error", code: 0, userInfo: nil)))
-//                    expect {
-//                        try RequestNetworkData.share.textRequest(method: .get, path: "mock", parameter: nil, complete: { (requestData, results) in
-//                        })
-//                    }.toEventually(throwAssertion(), timeout: 1, pollInterval: 0.3)
-//                }
+                it("处理请求相关错误") {
+                    self.stub(everything, failure(NSError(domain: "error", code: 0, userInfo: nil)))
+
+                    var networkResponse: NetworkResponse
+                    var result: Bool?
+                    try! RequestNetworkData.share.textRequest(method: .get, path: "mock", parameter: nil, complete: { (requestData, results) in
+                        networkResponse = requestData
+                        result = results
+                    })
+
+                    expect(networkResponse).toEventually(beNil(), timeout: 1, pollInterval: 0.3)
+                    expect(result).toNotEventually(beTrue(), timeout: 1, pollInterval: 0.3)
+                }
                 it("正常响应服务器错误") {
                     self.stub(everything, json(["key": "value"], status: 404, headers: nil))
                     var networkResponse: NetworkResponse

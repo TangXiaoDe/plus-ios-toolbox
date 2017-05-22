@@ -18,7 +18,8 @@ public enum RquestNetworkDataError: Error {
 ///
 /// 服务器可能会响应 Dictionary<String, Any>; Array<Any>; 以及 空数组
 /// 服务器指定使用空数组表示无数据的情况
-public typealias NetworkResponse = (responseData: Any?, error: NSError?)
+/// - Warning: 当出现数据解析或者超时等错误时, 返回 nil
+public typealias NetworkResponse = Any?
 
 public let kRequestNetworkDataErrorDomain = "com.zhiyicx.ios.error.network"
 
@@ -81,18 +82,16 @@ public class RequestNetworkData: NSObject {
                 print("http respond info \(response)")
             }
             guard response.result.isSuccess else {
-                let netwoekResponse = NetworkResponse(responseData: nil, error: response.result.error as? NSError)
-                complete(netwoekResponse, false)
+                complete(nil, false)
                 return
             }
-            let responseAllData = response.result.value
-            let netwoekResponse = NetworkResponse(responseData: responseAllData, error: nil)
+            let responseData = response.result.value
             // 当服务器响应 statusCode 在 200 ~ 300 间时,处理为正确
             guard response.response!.statusCode >= 200 && response.response!.statusCode < 300 else {
-                complete(netwoekResponse, false)
+                complete(responseData, false)
                 return
             }
-            complete(netwoekResponse, true)
+            complete(responseData, true)
         }
     }
 

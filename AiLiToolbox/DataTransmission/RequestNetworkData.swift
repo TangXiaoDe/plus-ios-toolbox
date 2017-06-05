@@ -100,7 +100,7 @@ public class RequestNetworkData: NSObject {
         var coustomHeaders: HTTPHeaders? = nil
         if let authorization = authorization {
             let token = "Bearer " + authorization
-            coustomHeaders = ["Authorization": token]
+            coustomHeaders = ["Authorization": token, "Accept": "application/json"]
         }
 
         var requestPath: String = ""

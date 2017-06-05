@@ -97,10 +97,10 @@ public class RequestNetworkData: NSObject {
             throw RquestNetworkDataError.uninitialized
         }
 
-        var coustomHeaders: HTTPHeaders? = nil
+        var coustomHeaders: HTTPHeaders = ["Accept": "application/json"]
         if let authorization = authorization {
             let token = "Bearer " + authorization
-            coustomHeaders = ["Authorization": token, "Accept": "application/json"]
+            coustomHeaders.updateValue(token, forKey: "Authorization")
         }
 
         var requestPath: String = ""

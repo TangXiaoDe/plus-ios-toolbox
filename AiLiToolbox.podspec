@@ -8,7 +8,7 @@ Pod::Spec.new do |spec|
     * 该工具库存储了开发实践中好用的相关函数
                        DESC
 
-  spec.homepage         = 'https://github.com/zhiyicx/AiLiToolbox'
+  spec.homepage         = 'https://github.com/slimkit/plus-ios-toolbox'
   spec.license          = { :type => 'MIT', :file => 'LICENSE' }
   spec.author           = { 'Lip Young' => 'mainbundle@gmail.com' }
 

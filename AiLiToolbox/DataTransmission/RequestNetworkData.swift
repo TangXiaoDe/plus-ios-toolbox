@@ -114,7 +114,7 @@ public class RequestNetworkData: NSObject {
                 return
             }
             guard let responseInfoDic = response.result.value as? Dictionary<String, Array<String>> else {
-                assert(false, "服务器响应的错误信息无法解析")
+                complete(response.result.value, responseStatus)
                 return
             }
             if responseInfoDic.keys.contains(self.serverResponseInfoKey) {

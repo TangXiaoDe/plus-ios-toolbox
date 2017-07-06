@@ -87,7 +87,7 @@ public class RequestNetworkData: NSObject {
 
         if self.isShowLog == true {
             let authorization: String = self.authorization ?? "nil"
-            print("\nRootURL:\(requestPath)\nAuthorization:" + (authorization) + "\nRequestMethod:\(method)\nParameters:\n\(parameter)\n")
+            print("\nRootURL:\(requestPath)\nAuthorization: Bearer " + (authorization) + "\nRequestMethod:\(method)\nParameters:\n\(parameter)\n")
         }
 
         alamofireManager.request(requestPath, method: method, parameters: parameter, encoding: JSONEncoding.default, headers: coustomHeaders).responseJSON { [unowned self] response in

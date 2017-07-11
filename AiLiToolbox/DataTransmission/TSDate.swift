@@ -213,11 +213,9 @@ public class TSDate: NSObject {
     /// 昨天显示 昨天\n07.10
     /// 其他显示 周几\n11.27
     func walletListDate() -> String {
-        let comphoent = calendar.dateComponents([.weekday], from: date, to: now)
-        
         formatter.dateFormat = "MM.dd"
         let day = formatter.string(from: date)
-        
+
         if isLate(than: today) {
             return "今天\n" + day
         }
@@ -225,8 +223,10 @@ public class TSDate: NSObject {
             formatter.dateFormat = "HH:mm"
             return "昨天\n" + day
         }
-        let weak = comphoent.weekday!
-        return "\(weakSting(weak))\n" + day
+        formatter.dateFormat = "e"
+        let week = Int(formatter.string(from: date))!
+
+        return "\(weakSting(week))\n" + day
     }
 
     /// 钱包详情
@@ -234,14 +234,14 @@ public class TSDate: NSObject {
     /// - Note:
     /// - 2017-05-02 周几 14:37
     func walletDetailDate() -> String {
-        let comphoent = calendar.dateComponents([.weekday], from: date, to: now)
-
         formatter.dateFormat = "yyyy-MM-dd"
         let year = formatter.string(from: date)
         formatter.dateFormat = "HH:mm"
         let time = formatter.string(from: date)
-        let weak = comphoent.weekday!
-        return year + " \(weakSting(weak)) " + time
+
+        formatter.dateFormat = "e"
+        let week = Int(formatter.string(from: date))!
+        return year + " \(weakSting(week)) " + time
     }
 
     // MARK: - Tool
@@ -249,19 +249,19 @@ public class TSDate: NSObject {
     /// 将 Int 转换成周几
     func weakSting(_ week: Int) -> String {
         switch week {
-        case 1:
-            return "周一"
         case 2:
-            return "周二"
+            return "周一"
         case 3:
-            return "周三"
+            return "周二"
         case 4:
-            return "周四"
+            return "周三"
         case 5:
-            return "周五"
+            return "周四"
         case 6:
-            return "周六"
+            return "周五"
         case 7:
+            return "周六"
+        case 1:
             return "周日"
         default:
             return ""

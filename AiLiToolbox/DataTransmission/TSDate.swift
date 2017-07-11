@@ -30,6 +30,14 @@ public enum DateType {
     /// - 2天到9天显示如（五天前 20：34），
     /// - 9天以上显示如（02-28 19:15）
     case detail
+    /// 钱包明细列表
+    /// - 今天显示 今天\n07.11
+    /// - 昨天显示 昨天\n07.10
+    /// - 其他显示 周几\n11.27
+    case walletList
+    /// 钱包详情
+    /// - 2017-05-02 周几 14:37
+    case walletDetail
 }
 
 public class TSDate: NSObject {
@@ -90,6 +98,10 @@ public class TSDate: NSObject {
             dateString = normalDate()
         case .detail:
             dateString = detailDate()
+        case .walletList:
+            dateString = walletListDate()
+        case .walletDetail:
+            dateString = walletDetailDate()
         }
         return dateString
     }
@@ -156,7 +168,7 @@ public class TSDate: NSObject {
             return "昨天"
         }
         if isLate(than: nightday) && isEarly(than: yesterday) {
-            return "\(comphoent.day! - 1)天前"
+            return "\(comphoent.day! + 1)天前"
         }
         formatter.dateFormat = "MM-dd"
         return formatter.string(from: date)
@@ -188,10 +200,72 @@ public class TSDate: NSObject {
         }
         if isLate(than: nightday) && isEarly(than: yesterday) {
             formatter.dateFormat = "HH:mm"
-            return "\(comphoent.day! - 1)天前 \(formatter.string(from: date))"
+            return "\(comphoent.day! + 1)天前 \(formatter.string(from: date))"
         }
         formatter.dateFormat = "MM-dd HH:mm"
         return formatter.string(from: date)
+    }
+
+    /// walletList 类型时间
+    ///
+    /// - Note:
+    /// 今天显示 今天\n07.11
+    /// 昨天显示 昨天\n07.10
+    /// 其他显示 周几\n11.27
+    func walletListDate() -> String {
+        formatter.dateFormat = "MM.dd"
+        let day = formatter.string(from: date)
+
+        if isLate(than: today) {
+            return "今天\n" + day
+        }
+        if isLate(than: yesterday) && isEarly(than: today) {
+            formatter.dateFormat = "HH:mm"
+            return "昨天\n" + day
+        }
+        formatter.dateFormat = "e"
+        let week = Int(formatter.string(from: date))!
+
+        return "\(weakSting(week))\n" + day
+    }
+
+    /// 钱包详情
+    ///
+    /// - Note:
+    /// - 2017-05-02 周几 14:37
+    func walletDetailDate() -> String {
+        formatter.dateFormat = "yyyy-MM-dd"
+        let year = formatter.string(from: date)
+        formatter.dateFormat = "HH:mm"
+        let time = formatter.string(from: date)
+
+        formatter.dateFormat = "e"
+        let week = Int(formatter.string(from: date))!
+        return year + " \(weakSting(week)) " + time
+    }
+
+    // MARK: - Tool
+
+    /// 将 Int 转换成周几
+    func weakSting(_ week: Int) -> String {
+        switch week {
+        case 2:
+            return "周一"
+        case 3:
+            return "周二"
+        case 4:
+            return "周三"
+        case 5:
+            return "周四"
+        case 6:
+            return "周五"
+        case 7:
+            return "周六"
+        case 1:
+            return "周日"
+        default:
+            return ""
+        }
     }
 
     /// 是否早于某个时间

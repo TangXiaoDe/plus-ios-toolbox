@@ -70,43 +70,76 @@ class TestsRequestNetworkDataSpec: QuickSpec {
             })
 
             context("发起网络请求", {
-                it("正常响应处理数据") {
-                    let url = self.rootUrl + "mock"
-                    self.stub(http(.get, uri: url), json(["key": "value"], status: 201, headers: nil))
-                    var networkResponse: NetworkResponse
-                    var result: Bool?
-                    try! RequestNetworkData.share.textRequest(method: .get, path: "mock", parameter: nil, complete: { (requestData, results) in
-                        networkResponse = requestData
-                        result = results
-                    })
+                describe("服务器响应接口约定的正常json数据时") {
+                    it("提供Dictionary[String, Any] 响应信息") {
+                        let url = self.rootUrl + "mock"
+                        self.stub(http(.get, uri: url), json(["key": "value"], status: 201, headers: nil))
+                        var networkResponse: NetworkResponse?
+                        var result: Bool?
+                        try! RequestNetworkData.share.textRequest(method: .get, path: "mock", parameter: nil, complete: { (requestData, results) in
+                            networkResponse = requestData
+                            result = results
+                        })
 
-                    expect((networkResponse as? Dictionary<String, Any>)?["key"] as? String).toEventually(equal("value"), timeout: 1, pollInterval: 0.3)
-                    expect(result).toEventually(beTrue(), timeout: 1, pollInterval: 0.3)
+                        expect((networkResponse as? Dictionary<String, Any>)?["key"] as? String).toEventually(equal("value"), timeout: 1, pollInterval: 0.3)
+                        expect(result).toEventually(beTrue(), timeout: 1, pollInterval: 0.3)
+                    }
                 }
-                it("处理请求相关错误") {
-                    self.stub(everything, failure(NSError(domain: "error", code: 0, userInfo: nil)))
+                describe("服务器响应接口约定的错误json信息时") {
+                    it("提供Dictionary[String: Array[String]] 响应信息") {
+                        self.stub(everything, json(["key": ["value"]], status: 404, headers: nil))
+                        var networkResponse: NetworkResponse?
+                        var result: Bool?
+                        try! RequestNetworkData.share.textRequest(method: .get, path: "mock", parameter: nil, complete: { (requestData, results) in
+                            networkResponse = requestData
+                            result = results
+                        })
 
-                    var networkResponse: NetworkResponse
-                    var result: Bool?
-                    try! RequestNetworkData.share.textRequest(method: .get, path: "mock", parameter: nil, complete: { (requestData, results) in
-                        networkResponse = requestData
-                        result = results
-                    })
-
-                    expect(networkResponse).toEventually(beNil(), timeout: 1, pollInterval: 0.3)
-                    expect(result).toNotEventually(beTrue(), timeout: 1, pollInterval: 0.3)
+                        expect((networkResponse as? Dictionary<String, Array<String>>)?["key"]?[0]).toEventually(equal("value"), timeout: 1, pollInterval: 0.3)
+                        expect(result).toNotEventually(beTrue(), timeout: 1, pollInterval: 0.3)
+                    }
                 }
-                it("正常响应服务器错误") {
-                    self.stub(everything, json(["key": "value"], status: 404, headers: nil))
-                    var networkResponse: NetworkResponse
-                    var result: Bool?
-                    try! RequestNetworkData.share.textRequest(method: .get, path: "mock", parameter: nil, complete: { (requestData, results) in
-                        networkResponse = requestData
-                        result = results
-                    })
+                describe("服务器响应接口约定的含有message关键字的错误json信息时") {
+                    it("提供首个String 响应信息") {
+                        self.stub(everything, json(["message": ["value0", "value1"]], status: 308, headers: nil))
+                        var networkResponse: String?
+                        var result: Bool?
+                        try! RequestNetworkData.share.textRequest(method: .get, path: "mock", parameter: nil, complete: { (requestData, results) in
+                            networkResponse = requestData as? String
+                            result = results
+                        })
 
-                    expect((networkResponse as? Dictionary<String, Any>)?["key"] as? String).toEventually(equal("value"), timeout: 1, pollInterval: 0.3)
-                    expect(result).toNotEventually(beTrue(), timeout: 1, pollInterval: 0.3)
+                        expect(networkResponse).toEventually(equal("value0"), timeout: 1, pollInterval: 0.3)
+                        expect(result).toNotEventually(beTrue(), timeout: 1, pollInterval: 0.3)
+                    }
+                }
+                describe("请求错误时") {
+                    it("处理非超时的请求错误信息") {
+                        self.stub(everything, failure(NSError(domain: NSURLErrorDomain, code: 0, userInfo: nil)))
+
+                        var networkResponse: NetworkError?
+                        var result: Bool?
+                        try! RequestNetworkData.share.textRequest(method: .get, path: "mock", parameter: nil, complete: { (requestData, results) in
+                            networkResponse = requestData as? NetworkError
+                            result = results
+                        })
+
+                        expect(networkResponse).toEventually(equal(NetworkError.networkErrorFailing), timeout: 1, pollInterval: 0.3)
+                        expect(result).toNotEventually(beTrue(), timeout: 1, pollInterval: 0.3)
+                    }
+                    it("处理请求超时错误") {
+                        self.stub(everything, failure(NSError(domain: NSURLErrorDomain, code: NSURLErrorTimedOut, userInfo: nil)))
+
+                        var networkResponse: NetworkError?
+                        var result: Bool?
+                        try! RequestNetworkData.share.textRequest(method: .get, path: "mock", parameter: nil, complete: { (requestData, results) in
+                            networkResponse = requestData as? NetworkError
+                            result = results
+                        })
+
+                        expect(networkResponse).toEventually(equal(NetworkError.networkTimedOut), timeout: 1, pollInterval: 0.3)
+                        expect(result).toNotEventually(beTrue(), timeout: 1, pollInterval: 0.3)
+                    }
                 }
             })
         }

@@ -27,7 +27,7 @@ class TestsDateNormal: TestsDate {
                 let oneHourStringAnswer = "59分钟前"
                 let oneDayAnswer = "10小时前"
                 let yesterday = "昨天"
-                let nineDayAnswer = "2天前"
+                let nineDayAnswer = "4天前"
                 let nineDayMoreAnswer = "10-01"
                 expect(oneMinuteString) == oneMimuteAnswer
                 expect(oneHourString) == oneHourStringAnswer

@@ -156,7 +156,7 @@ public class TSDate: NSObject {
             return "昨天"
         }
         if isLate(than: nightday) && isEarly(than: yesterday) {
-            return "\(comphoent.day! - 1)天前"
+            return "\(comphoent.day! + 1)天前"
         }
         formatter.dateFormat = "MM-dd"
         return formatter.string(from: date)
@@ -188,7 +188,7 @@ public class TSDate: NSObject {
         }
         if isLate(than: nightday) && isEarly(than: yesterday) {
             formatter.dateFormat = "HH:mm"
-            return "\(comphoent.day! - 1)天前 \(formatter.string(from: date))"
+            return "\(comphoent.day! + 1)天前 \(formatter.string(from: date))"
         }
         formatter.dateFormat = "MM-dd HH:mm"
         return formatter.string(from: date)

@@ -90,7 +90,14 @@ public class RequestNetworkData: NSObject {
             print("\nRootURL:\(requestPath)\nAuthorization: Bearer " + (authorization) + "\nRequestMethod:\(method)\nParameters:\n\(parameter)\n")
         }
 
-        alamofireManager.request(requestPath, method: method, parameters: parameter, headers: coustomHeaders).responseJSON { [unowned self] response in
+        var encoding: ParameterEncoding!
+        if method == .post {
+            encoding = JSONEncoding.default
+        } else {
+            encoding = URLEncoding.default
+        }
+
+        alamofireManager.request(requestPath, method: method, parameters: parameter, encoding: encoding, headers: coustomHeaders).responseJSON { [unowned self] response in
             if self.isShowLog == true {
                 print("http respond info \(response)")
             }

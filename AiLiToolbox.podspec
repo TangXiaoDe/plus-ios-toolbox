@@ -17,6 +17,7 @@ Pod::Spec.new do |spec|
 
   spec.dependency 'Alamofire', '4.2.0'
   spec.dependency 'SwiftyJSON', '3.1.3'
+  spec.dependency 'ObjectMapper', '2.2.7'
 
   spec.default_subspecs = 'Toolbox'
   spec.subspec 'Toolbox' do |toolbox|

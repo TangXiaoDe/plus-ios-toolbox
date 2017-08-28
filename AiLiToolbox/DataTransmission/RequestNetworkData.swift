@@ -7,6 +7,7 @@
 //  网络请求数据处理
 
 import UIKit
+import ObjectMapper
 import Alamofire
 
 public enum RquestNetworkDataError: Error {
@@ -21,14 +22,56 @@ public enum NetworkError: String {
     case networkTimedOut = "com.zhiyicx.www.network.time.out"
 }
 
+/// 网络请求协议
+public protocol NetworkRequest {
+    /// 网络请求路径
+    ///
+    /// - Warning: 该路径指的只最终发送给服务的路径,不包含根地址
+    var urlPath: String { get }
+    /// 网络请求方式
+    var method: HTTPMethod { get }
+    /// 网络请求参数
+    var parameter: [String: Any]? { get }
+    /// 相关的响应数据模型
+    ///
+    /// - Note: 该模型需要实现相对应的解析协议
+    associatedtype ResponseModel: Mappable
+}
+
+/// 网络请求成功相应数据
+///
+/// - statusCode: 响应参数
+/// - model: 响应正确的数据
+/// - message: 响应错误的数据
+//public typealias NetworkFullResponse<T> = (statusCode: Int, model: T?, message: String?)
+
+/// 完整响应数据
+public struct NetworkFullResponse<T: NetworkRequest> {
+    /// 响应编号
+    let statusCode: Int
+    /// 响应数据,由请求体配置的参数决定
+    var model: T.ResponseModel?
+    /// 响应一组数据,由请求体配置参数决定
+    var models: [T.ResponseModel]
+    /// 服务器响应数据
+    var message: String?
+}
+
+/// 网络请求结果
+///
+/// - success: 请求成功,返回数据
+/// - failure: 请求失败,返回失败原因
+public enum NetworkResult<T: NetworkRequest> {
+    case success(NetworkFullResponse<T>)
+    case failure(NetworkError)
+}
+
 /// 服务器响应数据
 ///
 /// 服务器可能会响应 Dictionary<String, Any>; Array<Any>; 以及 空数组
 /// 服务器指定使用空数组表示无数据的情况
 /// - Warning: 当出现数据解析或者超时等错误时, 返回 nil
 public typealias NetworkResponse = Any
-
-public let kRequestNetworkDataErrorDomain = "com.zhiyicx.ios.error.network"
 
 public class RequestNetworkData: NSObject {
     private var rootURL: String?
@@ -63,6 +106,109 @@ public class RequestNetworkData: NSObject {
     /// - Note: 配置后,每次请求的都会携带该参数
     public func configAuthorization(_ authorization: String?) {
         self.authorization = authorization
+    }
+
+    /// 文本请求
+    ///
+    /// - Parameters:
+    ///   - request: 请求体
+    ///   - complete: 响应数据
+    public func text<T: NetworkRequest>(request: T, complete: @escaping (_ result: NetworkResult<T>) -> Void) {
+        let (coustomHeaders, requestPath, encoding) = processParameters(self.authorization, request)
+
+        var dataResponse: DataResponse<Any>!
+        let decodeGroup = DispatchGroup()
+        decodeGroup.enter()
+        alamofireManager.request(requestPath, method: request.method, parameters: request.parameter, encoding: encoding, headers: coustomHeaders).responseJSON {  [unowned self] response in
+            guard response.response != nil else {
+                assert(false, "Server reponse empty.")
+                return
+            }
+
+            if self.isShowLog == true {
+                print("http respond info \(response)")
+            }
+
+            dataResponse = response
+            decodeGroup.leave()
+        }
+
+        decodeGroup.notify(queue: DispatchQueue.main) {
+            let result = dataResponse.result
+            let statusCode = dataResponse.response!.statusCode
+
+            if let error: NSError = result.error as NSError?, error.domain == NSURLErrorDomain && error.code == NSURLErrorTimedOut {
+                let error = NetworkError.networkTimedOut
+                let result = NetworkResult<T>.failure(error)
+                complete(result)
+                return
+            } else if let error = result.error as NSError?, error.domain == NSURLErrorDomain && error.code != NSURLErrorTimedOut {
+                let error = NetworkError.networkErrorFailing
+                let result = NetworkResult<T>.failure(error)
+                complete(result)
+                return
+            }
+
+            if statusCode >= 200 && statusCode < 300 {
+                if let datas = result.value as? [Any], let models = Mapper<T.ResponseModel>().mapArray(JSONObject: datas) {
+                    let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: models, message: nil)
+                    let result = NetworkResult.success(fullResponse)
+                    complete(result)
+                }
+
+                if let data = result.value as? [String: Any], let model = Mapper<T.ResponseModel>().map(JSON: data) {
+                    let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: model, models: [], message: nil)
+                    let result = NetworkResult<T>.success(fullResponse)
+                    complete(result)
+                }
+                return
+            }
+
+            // json -> ["message": ["value1", "value2"...]]
+            if let responseInfoDic = result.value as? Dictionary<String, Array<String>>, let messages = responseInfoDic[self.serverResponseInfoKey] {
+                let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: messages.first)
+                let result = NetworkResult<T>.success(fullResponse)
+                complete(result)
+                return
+            }
+            // josn -> ["message": "value"]
+            if let responseInfoDic = result.value as? Dictionary<String, String>, let message = responseInfoDic[self.serverResponseInfoKey] {
+                let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: message)
+                let result = NetworkResult<T>.success(fullResponse)
+                complete(result)
+                return
+            }
+            // json -> ["message": ["key1": "value1", "key2": "value2"...]]
+            if let responseInfoDic = result.value as? Dictionary<String, Dictionary<String, Any>>, let messageDic = responseInfoDic[self.serverResponseInfoKey] {
+                let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: messageDic.first?.value as! String?)
+                let result = NetworkResult<T>.success(fullResponse)
+                complete(result)
+                return
+            }
+            // statusCode 404 response empty
+            let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: nil)
+            let resultResponse = NetworkResult<T>.success(fullResponse)
+            complete(resultResponse)
+        }
+    }
+
+    private func processParameters<T: NetworkRequest>(_ authorization: String?, _ request: T) -> (HTTPHeaders, String, ParameterEncoding) {
+        guard let authorization = self.authorization else {
+            fatalError("Network request data error uninitialized, unallocate authorization.")
+        }
+
+        let requestPath = authorization + request.urlPath
+        var coustomHeaders: HTTPHeaders = ["Accept": "application/json"]
+        let token = "Bearer " + self.authorization!
+        coustomHeaders.updateValue(token, forKey: "Authorization")
+
+        var encoding: ParameterEncoding!
+        request.method == .get ? (encoding = URLEncoding.default) : (encoding = JSONEncoding.default)
+
+        if self.isShowLog == true {
+            print("\nRootURL:\(requestPath)\nAuthorization: Bearer " + (authorization) + "\nRequestMethod:\(request.method.rawValue)\nParameters:\n\(request.parameter)\n")
+        }
+        return (coustomHeaders, requestPath, encoding)
     }
 
     /// 和服务器间的文本请求

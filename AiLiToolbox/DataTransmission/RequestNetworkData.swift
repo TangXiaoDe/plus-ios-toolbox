@@ -29,7 +29,7 @@ public protocol NetworkRequest {
     /// 网络请求路径
     ///
     /// - Warning: 该路径指的只最终发送给服务的路径,不包含根地址
-    var urlPath: String { set get }
+    var urlPath: String! { set get }
     /// 网络请求方式
     var method: HTTPMethod { set get }
     /// 网络请求参数
@@ -53,24 +53,26 @@ public struct Empty: Mappable {
 /// 完整响应数据
 public struct NetworkFullResponse<T: NetworkRequest> {
     /// 响应编号
-    let statusCode: Int
+    public let statusCode: Int
     /// 响应数据,由请求体配置的参数决定
-    var model: T.ResponseModel?
+    public var model: T.ResponseModel?
     /// 响应一组数据,由请求体配置参数决定
-    var models: [T.ResponseModel]
+    public var models: [T.ResponseModel]
     /// 服务器响应数据
-    var message: String?
+    public var message: String?
     /// 源数据
-    var sourceData: Any?
+    public var sourceData: Any?
 }
 
 /// 网络请求结果
 ///
-/// - success: 请求成功,返回数据
-/// - failure: 请求失败,返回失败原因
+/// - success: 响应成功,返回数据
+/// - failure: 响应序列化错误,返回失败原因
+/// - error: 请求错误
 public enum NetworkResult<T: NetworkRequest> {
     case success(NetworkFullResponse<T>)
-    case failure(NetworkError)
+    case failure(NetworkFullResponse<T>)
+    case error(NetworkError)
 }
 
 /// 服务器响应数据
@@ -130,6 +132,9 @@ public class RequestNetworkData: NSObject {
         alamofireManager.request(requestPath, method: request.method, parameters: request.parameter, encoding: encoding, headers: coustomHeaders).responseJSON {  [unowned self] response in
             guard response.response != nil else {
                 assert(false, "Server reponse empty.")
+                let error = NetworkError.networkErrorFailing
+                let result = NetworkResult<T>.error(error)
+                complete(result)
                 return
             }
 
@@ -147,12 +152,12 @@ public class RequestNetworkData: NSObject {
 
             if let error: NSError = result.error as NSError?, error.domain == NSURLErrorDomain && error.code == NSURLErrorTimedOut {
                 let error = NetworkError.networkTimedOut
-                let result = NetworkResult<T>.failure(error)
+                let result = NetworkResult<T>.error(error)
                 complete(result)
                 return
             } else if let error = result.error as NSError?, error.domain == NSURLErrorDomain && error.code != NSURLErrorTimedOut {
                 let error = NetworkError.networkErrorFailing
-                let result = NetworkResult<T>.failure(error)
+                let result = NetworkResult<T>.error(error)
                 complete(result)
                 return
             }
@@ -175,46 +180,68 @@ public class RequestNetworkData: NSObject {
             // json -> ["message": ["value1", "value2"...]]
             if let responseInfoDic = result.value as? Dictionary<String, Array<String>>, let messages = responseInfoDic[self.serverResponseInfoKey] {
                 let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: messages.first, sourceData: result.value)
-                let result = NetworkResult<T>.success(fullResponse)
-                complete(result)
+                if result.isSuccess {
+                    let result = NetworkResult<T>.success(fullResponse)
+                    complete(result)
+                } else {
+                    let result = NetworkResult<T>.failure(fullResponse)
+                    complete(result)
+                }
                 return
             }
             // josn -> ["message": "value"]
             if let responseInfoDic = result.value as? Dictionary<String, String>, let message = responseInfoDic[self.serverResponseInfoKey] {
                 let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: message, sourceData: result.value)
-                let result = NetworkResult<T>.success(fullResponse)
-                complete(result)
+                if result.isSuccess {
+                    let result = NetworkResult<T>.success(fullResponse)
+                    complete(result)
+                } else {
+                    let result = NetworkResult<T>.failure(fullResponse)
+                    complete(result)
+                }
                 return
             }
             // json -> ["message": ["key1": "value1", "key2": "value2"...]]
             if let responseInfoDic = result.value as? Dictionary<String, Dictionary<String, Any>>, let messageDic = responseInfoDic[self.serverResponseInfoKey] {
                 let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: messageDic.first?.value as! String?, sourceData: result.value)
-                let result = NetworkResult<T>.success(fullResponse)
-                complete(result)
+                if result.isSuccess {
+                    let result = NetworkResult<T>.success(fullResponse)
+                    complete(result)
+                } else {
+                    let result = NetworkResult<T>.failure(fullResponse)
+                    complete(result)
+                }
                 return
             }
             // statusCode 404 response empty
             let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: nil, sourceData: result.value)
-            let resultResponse = NetworkResult<T>.success(fullResponse)
+            if result.isSuccess {
+                let result = NetworkResult<T>.success(fullResponse)
+                complete(result)
+                return
+            }
+            let resultResponse = NetworkResult<T>.failure(fullResponse)
             complete(resultResponse)
         }
     }
 
     private func processParameters<T: NetworkRequest>(_ authorization: String?, _ request: T) -> (HTTPHeaders, String, ParameterEncoding) {
-        guard let authorization = self.authorization else {
+        guard let rootURL = self.rootURL else {
             fatalError("Network request data error uninitialized, unallocate authorization.")
         }
 
-        let requestPath = authorization + request.urlPath
+        let requestPath = rootURL + request.urlPath
         var coustomHeaders: HTTPHeaders = ["Accept": "application/json"]
-        let token = "Bearer " + self.authorization!
-        coustomHeaders.updateValue(token, forKey: "Authorization")
+        if let authorization = self.authorization {
+            let token = "Bearer " + authorization
+            coustomHeaders.updateValue(token, forKey: "Authorization")
+        }
 
         var encoding: ParameterEncoding!
         request.method == .get ? (encoding = URLEncoding.default) : (encoding = JSONEncoding.default)
 
         if self.isShowLog == true {
-            print("\nRootURL:\(requestPath)\nAuthorization: Bearer " + (authorization) + "\nRequestMethod:\(request.method.rawValue)\nParameters:\n\(request.parameter)\n")
+            print("\nRootURL:\(requestPath)\nAuthorization: Bearer " + (coustomHeaders["Authorization"] ?? "nil") + "\nRequestMethod:\(request.method.rawValue)\nParameters:\n\(request.parameter)\n")
         }
         return (coustomHeaders, requestPath, encoding)
     }

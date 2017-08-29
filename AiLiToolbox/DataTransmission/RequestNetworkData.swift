@@ -40,6 +40,16 @@ public protocol NetworkRequest {
     associatedtype ResponseModel: Mappable
 }
 
+/// 空类型
+///
+/// - Note: 设置 NetworkRequest.ResponseModel 为该类型表示不需要解析 ResponseModel
+public struct Empty: Mappable {
+    public init?(map: Map) {
+    }
+    public func mapping(map: Map) {
+    }
+}
+
 /// 完整响应数据
 public struct NetworkFullResponse<T: NetworkRequest> {
     /// 响应编号
@@ -50,6 +60,8 @@ public struct NetworkFullResponse<T: NetworkRequest> {
     var models: [T.ResponseModel]
     /// 服务器响应数据
     var message: String?
+    /// 源数据
+    var sourceData: Any?
 }
 
 /// 网络请求结果
@@ -145,15 +157,15 @@ public class RequestNetworkData: NSObject {
                 return
             }
 
-            if statusCode >= 200 && statusCode < 300 {
+            if statusCode >= 200 && statusCode < 300 && T.ResponseModel.self != Empty.self {
                 if let datas = result.value as? [Any], let models = Mapper<T.ResponseModel>().mapArray(JSONObject: datas) {
-                    let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: models, message: nil)
+                    let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: models, message: nil, sourceData: result.value)
                     let result = NetworkResult.success(fullResponse)
                     complete(result)
                 }
 
                 if let data = result.value as? [String: Any], let model = Mapper<T.ResponseModel>().map(JSON: data) {
-                    let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: model, models: [], message: nil)
+                    let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: model, models: [], message: nil, sourceData: result.value)
                     let result = NetworkResult<T>.success(fullResponse)
                     complete(result)
                 }
@@ -162,27 +174,27 @@ public class RequestNetworkData: NSObject {
 
             // json -> ["message": ["value1", "value2"...]]
             if let responseInfoDic = result.value as? Dictionary<String, Array<String>>, let messages = responseInfoDic[self.serverResponseInfoKey] {
-                let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: messages.first)
+                let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: messages.first, sourceData: result.value)
                 let result = NetworkResult<T>.success(fullResponse)
                 complete(result)
                 return
             }
             // josn -> ["message": "value"]
             if let responseInfoDic = result.value as? Dictionary<String, String>, let message = responseInfoDic[self.serverResponseInfoKey] {
-                let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: message)
+                let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: message, sourceData: result.value)
                 let result = NetworkResult<T>.success(fullResponse)
                 complete(result)
                 return
             }
             // json -> ["message": ["key1": "value1", "key2": "value2"...]]
             if let responseInfoDic = result.value as? Dictionary<String, Dictionary<String, Any>>, let messageDic = responseInfoDic[self.serverResponseInfoKey] {
-                let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: messageDic.first?.value as! String?)
+                let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: messageDic.first?.value as! String?, sourceData: result.value)
                 let result = NetworkResult<T>.success(fullResponse)
                 complete(result)
                 return
             }
             // statusCode 404 response empty
-            let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: nil)
+            let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: nil, sourceData: result.value)
             let resultResponse = NetworkResult<T>.success(fullResponse)
             complete(resultResponse)
         }

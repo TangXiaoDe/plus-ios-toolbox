@@ -29,7 +29,7 @@ public protocol NetworkRequest {
     /// 网络请求路径
     ///
     /// - Warning: 该路径指的只最终发送给服务的路径,不包含根地址
-    var urlPath: String { get }
+    var urlPath: String { set get }
     /// 网络请求方式
     var method: HTTPMethod { set get }
     /// 网络请求参数

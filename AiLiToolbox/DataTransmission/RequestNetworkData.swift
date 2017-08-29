@@ -31,9 +31,9 @@ public protocol NetworkRequest {
     /// - Warning: 该路径指的只最终发送给服务的路径,不包含根地址
     var urlPath: String { get }
     /// 网络请求方式
-    var method: HTTPMethod { get }
+    var method: HTTPMethod { set get }
     /// 网络请求参数
-    var parameter: [String: Any]? { get }
+    var parameter: [String: Any]? { set get }
     /// 相关的响应数据模型
     ///
     /// - Note: 该模型需要实现相对应的解析协议

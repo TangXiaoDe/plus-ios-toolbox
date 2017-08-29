@@ -10,8 +10,10 @@ import UIKit
 import ObjectMapper
 import Alamofire
 
+/// 网络请求错误
+///
+/// - uninitialized: 未正常初始化
 public enum RquestNetworkDataError: Error {
-    /// 未正常初始化
     case uninitialized
 }
 
@@ -37,13 +39,6 @@ public protocol NetworkRequest {
     /// - Note: 该模型需要实现相对应的解析协议
     associatedtype ResponseModel: Mappable
 }
-
-/// 网络请求成功相应数据
-///
-/// - statusCode: 响应参数
-/// - model: 响应正确的数据
-/// - message: 响应错误的数据
-//public typealias NetworkFullResponse<T> = (statusCode: Int, model: T?, message: String?)
 
 /// 完整响应数据
 public struct NetworkFullResponse<T: NetworkRequest> {
@@ -113,6 +108,7 @@ public class RequestNetworkData: NSObject {
     /// - Parameters:
     ///   - request: 请求体
     ///   - complete: 响应数据
+    /// - Note: 当响应数据出现所有内容为空的情况,需要根据 statusCode 来自行决定显示的 message, 后台建议 500以上显示服务器错误,500以下显示网络错误
     public func text<T: NetworkRequest>(request: T, complete: @escaping (_ result: NetworkResult<T>) -> Void) {
         let (coustomHeaders, requestPath, encoding) = processParameters(self.authorization, request)
 

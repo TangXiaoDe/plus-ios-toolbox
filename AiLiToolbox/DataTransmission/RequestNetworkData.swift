@@ -10,6 +10,13 @@ import UIKit
 import ObjectMapper
 import Alamofire
 
+extension Notification.Name {
+    public struct Network {
+        /// 当服务器检测到登录授权不合法时会发送该通知
+        public static let Illicit = NSNotification.Name(rawValue: "com.ailitoolbox.notification.name.network.Illicit")
+    }
+}
+
 /// 网络请求错误
 ///
 /// - uninitialized: 未正常初始化
@@ -177,6 +184,10 @@ public class RequestNetworkData: NSObject {
                 return
             }
 
+            if statusCode == 401 {
+                NotificationCenter.default.post(name: NSNotification.Name.Network.Illicit, object: nil)
+            }
+
             // json -> ["message": ["value1", "value2"...]]
             if let responseInfoDic = result.value as? Dictionary<String, Array<String>>, let messages = responseInfoDic[self.serverResponseInfoKey] {
                 let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: messages.first, sourceData: result.value)
@@ -300,6 +311,9 @@ public class RequestNetworkData: NSObject {
                 responseStatus = true
                 complete(response.result.value, responseStatus)
                 return
+            }
+            if serverResponse.statusCode == 401 {
+                NotificationCenter.default.post(name: NSNotification.Name.Network.Illicit, object: nil)
             }
             guard let responseInfoDic = response.result.value as? Dictionary<String, Array<String>> else {
                 complete(response.result.value, responseStatus)

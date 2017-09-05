@@ -314,6 +314,8 @@ public class RequestNetworkData: NSObject {
             }
             if serverResponse.statusCode == 401 {
                 NotificationCenter.default.post(name: NSNotification.Name.Network.Illicit, object: nil)
+                complete("网络请求错误", false)
+                return
             }
             guard let responseInfoDic = response.result.value as? Dictionary<String, Array<String>> else {
                 complete(response.result.value, responseStatus)

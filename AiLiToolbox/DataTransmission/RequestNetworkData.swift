@@ -191,46 +191,26 @@ public class RequestNetworkData: NSObject {
             // json -> ["message": ["value1", "value2"...]]
             if let responseInfoDic = result.value as? Dictionary<String, Array<String>>, let messages = responseInfoDic[self.serverResponseInfoKey] {
                 let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: messages.first, sourceData: result.value)
-                if result.isSuccess {
-                    let result = NetworkResult<T>.success(fullResponse)
-                    complete(result)
-                } else {
-                    let result = NetworkResult<T>.failure(fullResponse)
-                    complete(result)
-                }
+                let result = NetworkResult<T>.failure(fullResponse)
+                complete(result)
                 return
             }
             // josn -> ["message": "value"]
             if let responseInfoDic = result.value as? Dictionary<String, String>, let message = responseInfoDic[self.serverResponseInfoKey] {
                 let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: message, sourceData: result.value)
-                if result.isSuccess {
-                    let result = NetworkResult<T>.success(fullResponse)
-                    complete(result)
-                } else {
-                    let result = NetworkResult<T>.failure(fullResponse)
-                    complete(result)
-                }
+                let result = NetworkResult<T>.failure(fullResponse)
+                complete(result)
                 return
             }
             // json -> ["message": ["key1": "value1", "key2": "value2"...]]
             if let responseInfoDic = result.value as? Dictionary<String, Dictionary<String, Any>>, let messageDic = responseInfoDic[self.serverResponseInfoKey] {
                 let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: messageDic.first?.value as! String?, sourceData: result.value)
-                if result.isSuccess {
-                    let result = NetworkResult<T>.success(fullResponse)
-                    complete(result)
-                } else {
-                    let result = NetworkResult<T>.failure(fullResponse)
-                    complete(result)
-                }
+                let result = NetworkResult<T>.failure(fullResponse)
+                complete(result)
                 return
             }
             // statusCode 404 response empty
             let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: nil, sourceData: result.value)
-            if result.isSuccess {
-                let result = NetworkResult<T>.success(fullResponse)
-                complete(result)
-                return
-            }
             let resultResponse = NetworkResult<T>.failure(fullResponse)
             complete(resultResponse)
         }

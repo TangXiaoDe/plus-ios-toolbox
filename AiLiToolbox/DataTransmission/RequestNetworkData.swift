@@ -253,6 +253,7 @@ public class RequestNetworkData: NSObject {
     ///   - 错误信息拆包: 当 responseStatus 错误时,服务器响应错误中含有服务器约定好的值‘message’时,会将对应的错误信息中的首个信息字符串通过 NetworkResponse 返回,此时 NetworkResponse 类型为 String
     /// - 所有详细的错误信息都会打印在控制台
     /// - Throws: 错误状态,如果未成功配置根地址会抛错
+    @discardableResult
     public func textRequest(method: HTTPMethod, path: String?, parameter: Dictionary<String, Any>?, complete: @escaping (_ responseData: NetworkResponse?, _ responseStatus: Bool) -> Void) throws -> DataRequest {
 
         let (coustomHeaders, requestPath) = try processParameters(self.authorization, path)

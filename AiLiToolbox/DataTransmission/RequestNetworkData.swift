@@ -168,7 +168,7 @@ public class RequestNetworkData: NSObject {
                 complete(result)
                 return
             }
-
+            // 状态码正常且需要转换数据
             if statusCode >= 200 && statusCode < 300 && T.ResponseModel.self != Empty.self {
                 if let datas = result.value as? [Any], let models = Mapper<T.ResponseModel>().mapArray(JSONObject: datas) {
                     let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: models, message: nil, sourceData: result.value)
@@ -183,10 +183,18 @@ public class RequestNetworkData: NSObject {
                 }
                 return
             }
-
+            // 状态码正常但是不需要转换数据
+            if statusCode >= 200 && statusCode < 300 && T.ResponseModel.self == Empty.self {
+                let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: nil, sourceData: result.value)
+                let result = NetworkResult<T>.success(fullResponse)
+                complete(result)
+                return
+            }
+            // 特殊的状态码
             if statusCode == 401 {
                 NotificationCenter.default.post(name: NSNotification.Name.Network.Illicit, object: nil)
             }
+            // 错误信息的处理
 
             // json -> ["message": ["value1", "value2"...]]
             if let responseInfoDic = result.value as? Dictionary<String, Array<String>>, let messages = responseInfoDic[self.serverResponseInfoKey] {

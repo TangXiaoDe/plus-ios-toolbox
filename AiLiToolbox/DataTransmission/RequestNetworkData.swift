@@ -138,7 +138,6 @@ public class RequestNetworkData: NSObject {
         decodeGroup.enter()
         alamofireManager.request(requestPath, method: request.method, parameters: request.parameter, encoding: encoding, headers: coustomHeaders).responseJSON {  [unowned self] response in
             guard response.response != nil else {
-                assert(false, "Server reponse empty.")
                 let error = NetworkError.networkErrorFailing
                 let result = NetworkResult<T>.error(error)
                 complete(result)

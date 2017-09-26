@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "075333C089CCBA2DE1EE9F688FEC1B05"
+               BlueprintIdentifier = "BDAE0D1F996D60FF3D40B0F7752C1E22"
                BuildableName = "AiLiToolbox.framework"
                BlueprintName = "AiLiToolbox"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">

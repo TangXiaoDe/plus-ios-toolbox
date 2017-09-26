@@ -216,6 +216,23 @@ public class RequestNetworkData: NSObject {
                 complete(result)
                 return
             }
+            // json -> { "message": "value", "errors": { "key1": ["value1"], "key2": ["value1", "value2"]}
+            // 该种类型下, errors 内的第一个key 对应的 value1 显示给用户, value 信息用于开发人员开发中调试
+            if let responseInfoDic = result.value as? Dictionary<String, Any>, let errorDic = responseInfoDic["errors"] as? Dictionary<String, Array<String>> {
+                if let key = errorDic.keys.first, let message = errorDic[key]?[0] {
+                    let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: message, sourceData: result.value)
+                    let result = NetworkResult<T>.failure(fullResponse)
+                    complete(result)
+                    return
+                }
+                // 解析 error 信息失败时,抛出 value
+                if let message = responseInfoDic[self.serverResponseInfoKey] as? String {
+                    let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: message, sourceData: result.value)
+                    let result = NetworkResult<T>.failure(fullResponse)
+                    complete(result)
+                    return
+                }
+            }
             // statusCode 404 response empty
             let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: nil, sourceData: result.value)
             let resultResponse = NetworkResult<T>.failure(fullResponse)
@@ -239,7 +256,7 @@ public class RequestNetworkData: NSObject {
         request.method == .get ? (encoding = URLEncoding.default) : (encoding = JSONEncoding.default)
 
         if self.isShowLog == true {
-            print("\nRootURL:\(requestPath)\nAuthorization: Bearer " + (coustomHeaders["Authorization"] ?? "nil") + "\nRequestMethod:\(request.method.rawValue)\nParameters:\n\(request.parameter)\n")
+            print("\nRootURL:\(requestPath)\nAuthorization: " + (coustomHeaders["Authorization"] ?? "nil") + "\nRequestMethod:\(request.method.rawValue)\nParameters:\n\(request.parameter)\n")
         }
         return (coustomHeaders, requestPath, encoding)
     }

@@ -217,16 +217,22 @@ public class RequestNetworkData: NSObject {
                 return
             }
             // json -> { "message": "value", "errors": { "key1": ["value1"], "key2": ["value1", "value2"]}
-            // 该种类型下, errors 内的第一个key 对应的 value1 显示给用户, value 信息用于开发人员开发中调试
-            if let responseInfoDic = result.value as? Dictionary<String, Any>, let errorDic = responseInfoDic["errors"] as? Dictionary<String, Array<String>> {
-                if let key = errorDic.keys.first, let message = errorDic[key]?[0] {
+            // 该种类型下, errors 的第一个key 对应的 value1 显示给用户, value 信息用于开发人员开发中调试
+            if let responseInfoDic = result.value as? Dictionary<String, Any> {
+                if let errorDic = responseInfoDic["errors"] as? Dictionary<String, Array<String>>, let message = errorDic.first?.value.first {
+                    // json -> ["message":"value", "errors":["key1":"value1", "key2":"value2"]]
                     let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: message, sourceData: result.value)
                     let result = NetworkResult<T>.failure(fullResponse)
                     complete(result)
                     return
-                }
-                // 解析 error 信息失败时,抛出 value
-                if let message = responseInfoDic[self.serverResponseInfoKey] as? String {
+                } else if let responseInfo = responseInfoDic as? Dictionary<String, Array<String>>, let message = responseInfo.first?.value.first {
+                    // json -> ["key":["value"], "key2":["value1", "value2"]]
+                    let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: message, sourceData: result.value)
+                    let result = NetworkResult<T>.failure(fullResponse)
+                    complete(result)
+                    return
+                } else if let message = responseInfoDic[self.serverResponseInfoKey] as? String {
+                    // json -> ["message": "value", other...]
                     let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: message, sourceData: result.value)
                     let result = NetworkResult<T>.failure(fullResponse)
                     complete(result)

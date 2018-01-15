@@ -210,8 +210,23 @@ public class RequestNetworkData: NSObject {
                 return
             }
             // json -> ["message": ["key1": "value1", "key2": "value2"...]]
+            if let responseInfoDic = result.value as? Dictionary<String, Dictionary<String, String>>, let messageDic = responseInfoDic[self.serverResponseInfoKey] {
+                let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: messageDic.first?.value, sourceData: result.value)
+                let result = NetworkResult<T>.failure(fullResponse)
+                complete(result)
+                return
+            }
+            // json -> ["message": ["key1": value1, "key2": "value2"...]]
+            // { "message": { "code": 422, "msg": "Invalid uids, no valid user"} }
             if let responseInfoDic = result.value as? Dictionary<String, Dictionary<String, Any>>, let messageDic = responseInfoDic[self.serverResponseInfoKey] {
-                let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: messageDic.first?.value as! String?, sourceData: result.value)
+                var message: String?
+                for (_, value) in messageDic.enumerated() {
+                    if let value = value as? String {
+                        message = value
+                        break
+                    }
+                }
+                let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: message, sourceData: result.value)
                 let result = NetworkResult<T>.failure(fullResponse)
                 complete(result)
                 return

@@ -184,7 +184,8 @@ public class RequestNetworkData: NSObject {
             }
             // 状态码正常但是不需要转换数据
             if statusCode >= 200 && statusCode < 300 && T.ResponseModel.self == Empty.self {
-                let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: nil, sourceData: result.value)
+                let message = self.getSuccessMessage(result: result)
+                let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: message, sourceData: result.value)
                 let result = NetworkResult<T>.success(fullResponse)
                 complete(result)
                 return
@@ -194,68 +195,8 @@ public class RequestNetworkData: NSObject {
                 NotificationCenter.default.post(name: NSNotification.Name.Network.Illicit, object: nil)
             }
             // 错误信息的处理
-
-            // json -> ["message": ["value1", "value2"...]]
-            if let responseInfoDic = result.value as? Dictionary<String, Array<String>>, let messages = responseInfoDic[self.serverResponseInfoKey] {
-                let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: messages.first, sourceData: result.value)
-                let result = NetworkResult<T>.failure(fullResponse)
-                complete(result)
-                return
-            }
-            // josn -> ["message": "value"]
-            if let responseInfoDic = result.value as? Dictionary<String, String>, let message = responseInfoDic[self.serverResponseInfoKey] {
-                let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: message, sourceData: result.value)
-                let result = NetworkResult<T>.failure(fullResponse)
-                complete(result)
-                return
-            }
-            // json -> ["message": ["key1": "value1", "key2": "value2"...]]
-            if let responseInfoDic = result.value as? Dictionary<String, Dictionary<String, String>>, let messageDic = responseInfoDic[self.serverResponseInfoKey] {
-                let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: messageDic.first?.value, sourceData: result.value)
-                let result = NetworkResult<T>.failure(fullResponse)
-                complete(result)
-                return
-            }
-            // json -> ["message": ["key1": value1, "key2": "value2"...]]
-            // { "message": { "code": 422, "msg": "Invalid uids, no valid user"} }
-            if let responseInfoDic = result.value as? Dictionary<String, Dictionary<String, Any>>, let messageDic = responseInfoDic[self.serverResponseInfoKey] {
-                var message: String?
-                for (_, value) in messageDic.enumerated() {
-                    if let value = value as? String {
-                        message = value
-                        break
-                    }
-                }
-                let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: message, sourceData: result.value)
-                let result = NetworkResult<T>.failure(fullResponse)
-                complete(result)
-                return
-            }
-            // json -> { "message": "value", "errors": { "key1": ["value1"], "key2": ["value1", "value2"]}
-            // 该种类型下, errors 的第一个key 对应的 value1 显示给用户, value 信息用于开发人员开发中调试
-            if let responseInfoDic = result.value as? Dictionary<String, Any> {
-                if let errorDic = responseInfoDic["errors"] as? Dictionary<String, Array<String>>, let message = errorDic.first?.value.first {
-                    // json -> ["message":"value", "errors":["key1":"value1", "key2":"value2"]]
-                    let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: message, sourceData: result.value)
-                    let result = NetworkResult<T>.failure(fullResponse)
-                    complete(result)
-                    return
-                } else if let responseInfo = responseInfoDic as? Dictionary<String, Array<String>>, let message = responseInfo.first?.value.first {
-                    // json -> ["key":["value"], "key2":["value1", "value2"]]
-                    let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: message, sourceData: result.value)
-                    let result = NetworkResult<T>.failure(fullResponse)
-                    complete(result)
-                    return
-                } else if let message = responseInfoDic[self.serverResponseInfoKey] as? String {
-                    // json -> ["message": "value", other...]
-                    let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: message, sourceData: result.value)
-                    let result = NetworkResult<T>.failure(fullResponse)
-                    complete(result)
-                    return
-                }
-            }
-            // statusCode 404 response empty
-            let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: nil, sourceData: result.value)
+            let message: String? = self.getErrorMessage(result: result)
+            let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: message, sourceData: result.value)
             let resultResponse = NetworkResult<T>.failure(fullResponse)
             complete(resultResponse)
         }
@@ -374,4 +315,83 @@ public class RequestNetworkData: NSObject {
         }
         return (coustomHeaders, requestPath)
     }
+    
+    fileprivate func getSuccessMessage(result: Result<Any>) -> String? {
+        var message: String? = nil
+        
+        // json -> ["message": ["value1", "value2"...]]
+        if let responseInfoDic = result.value as? Dictionary<String, Array<String>>, let messages = responseInfoDic[self.serverResponseInfoKey] {
+            message = messages.first
+            return message
+        }
+        // josn -> ["message": "value"]
+        if let responseInfoDic = result.value as? Dictionary<String, String>, let message = responseInfoDic[self.serverResponseInfoKey] {
+            return message
+        }
+        // json -> ["message": ["key1": "value1", "key2": "value2"...]]
+        if let responseInfoDic = result.value as? Dictionary<String, Dictionary<String, String>>, let messageDic = responseInfoDic[self.serverResponseInfoKey] {
+            message = messageDic.first?.value
+            return message
+        }
+        // json -> ["message": ["key1": value1, "key2": "value2"...]]
+        // { "message": { "code": 422, "msg": "Invalid uids, no valid user"} }
+        if let responseInfoDic = result.value as? Dictionary<String, Dictionary<String, Any>>, let messageDic = responseInfoDic[self.serverResponseInfoKey] {
+            for (_, value) in messageDic.enumerated() {
+                if let value = value as? String {
+                    message = value
+                    break
+                }
+            }
+            return message
+        }
+        
+        return message
+    }
+    
+    fileprivate func getErrorMessage(result: Result<Any>) -> String? {
+        var message: String? = nil
+        
+        // json -> ["message": ["value1", "value2"...]]
+        if let responseInfoDic = result.value as? Dictionary<String, Array<String>>, let messages = responseInfoDic[self.serverResponseInfoKey] {
+            message = messages.first
+            return message
+        }
+        // josn -> ["message": "value"]
+        if let responseInfoDic = result.value as? Dictionary<String, String>, let message = responseInfoDic[self.serverResponseInfoKey] {
+            return message
+        }
+        // json -> ["message": ["key1": "value1", "key2": "value2"...]]
+        if let responseInfoDic = result.value as? Dictionary<String, Dictionary<String, String>>, let messageDic = responseInfoDic[self.serverResponseInfoKey] {
+            message = messageDic.first?.value
+            return message
+        }
+        // json -> ["message": ["key1": value1, "key2": "value2"...]]
+        // { "message": { "code": 422, "msg": "Invalid uids, no valid user"} }
+        if let responseInfoDic = result.value as? Dictionary<String, Dictionary<String, Any>>, let messageDic = responseInfoDic[self.serverResponseInfoKey] {
+            for (_, value) in messageDic.enumerated() {
+                if let value = value as? String {
+                    message = value
+                    break
+                }
+            }
+            return message
+        }
+        // json -> { "message": "value", "errors": { "key1": ["value1"], "key2": ["value1", "value2"]}
+        // 该种类型下, errors 的第一个key 对应的 value1 显示给用户, value 信息用于开发人员开发中调试
+        if let responseInfoDic = result.value as? Dictionary<String, Any> {
+            if let errorDic = responseInfoDic["errors"] as? Dictionary<String, Array<String>>, let message = errorDic.first?.value.first {
+                // json -> ["message":"value", "errors":["key1":"value1", "key2":"value2"]]
+                return message
+            } else if let responseInfo = responseInfoDic as? Dictionary<String, Array<String>>, let message = responseInfo.first?.value.first {
+                // json -> ["key":["value"], "key2":["value1", "value2"]]
+                return message
+            } else if let message = responseInfoDic[self.serverResponseInfoKey] as? String {
+                // json -> ["message": "value", other...]
+                return message
+            }
+        }
+        
+        return message
+    }
+
 }

@@ -14,6 +14,8 @@ extension Notification.Name {
     public struct Network {
         /// 当服务器检测到登录授权不合法时会发送该通知
         public static let Illicit = NSNotification.Name(rawValue: "com.ailitoolbox.notification.name.network.Illicit")
+        /// 当服务器停机维护时会发送该通知
+        public static let HostDown = NSNotification.Name(rawValue: "com.ailitoolbox.notification.name.network.HostDown")
     }
 }
 
@@ -59,17 +61,47 @@ public struct Empty: Mappable {
 
 /// 完整响应数据
 public struct NetworkFullResponse<T: NetworkRequest> {
-    /// 响应编号
+    /// 状态码
     public let statusCode: Int
     /// 响应数据,由请求体配置的参数决定
     public var model: T.ResponseModel?
     /// 响应一组数据,由请求体配置参数决定
     public var models: [T.ResponseModel]
+    
     /// 服务器响应数据
     public var message: String?
     /// 源数据
     public var sourceData: Any?
 }
+
+
+public struct TBNetworkResultModel<T: NetworkRequest>: Mappable {
+    
+    public var code: Int = -1
+    public var message: String? = nil
+    public var model: T.ResponseModel? = nil
+    public var models: [T.ResponseModel] = []
+    
+    public var statusCode: Int = 0
+    public var sourceData: Any?
+    
+    init() {
+        
+    }
+    
+    public init?(map: Map) {
+    }
+    public mutating func mapping(map: Map) {
+        code <- map["code"]
+        message <- map["message"]
+        model <- map["data"]
+        models <- map["data"]
+    }
+    
+}
+
+
+
 
 /// 网络请求结果
 ///
@@ -77,8 +109,8 @@ public struct NetworkFullResponse<T: NetworkRequest> {
 /// - failure: 响应序列化错误,返回失败原因
 /// - error: 请求错误
 public enum NetworkResult<T: NetworkRequest> {
-    case success(NetworkFullResponse<T>)
-    case failure(NetworkFullResponse<T>)
+    case success(TBNetworkResultModel<T>)
+    case failure(TBNetworkResultModel<T>)
     case error(NetworkError)
 }
 
@@ -95,19 +127,19 @@ public class RequestNetworkData: NSObject {
     private let serverResponseInfoKey = "message"
     private var authorization: String?
     private override init() {}
-
+    
     public static let share = RequestNetworkData()
     /// 配置是否显示日志信息,默认是关闭的
     ///
     /// - Note: 开启后,每次网络请求都会在控制台打印请求数据和请求结果
     public var isShowLog = false
-
+    
     lazy var alamofireManager: SessionManager = {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = TimeInterval(self.textRequestTimeoutInterval)
         return Alamofire.SessionManager(configuration: configuration)
     }()
-
+    
     // MARK: - config
     /// 设置请求的根地址
     ///
@@ -116,14 +148,14 @@ public class RequestNetworkData: NSObject {
     public func configRootURL(rootURL: String?) {
         self.rootURL = rootURL
     }
-
+    
     /// 配置请求的授权口令
     ///
     /// - Note: 配置后,每次请求的都会携带该参数
     public func configAuthorization(_ authorization: String?) {
         self.authorization = authorization
     }
-
+    
     /// 文本请求
     ///
     /// - Parameters:
@@ -132,97 +164,95 @@ public class RequestNetworkData: NSObject {
     /// - Note: 当响应数据出现所有内容为空的情况,需要根据 statusCode 来自行决定显示的 message, 后台建议 500以上显示服务器错误,500以下显示网络错误
     public func text<T: NetworkRequest>(request: T, complete: @escaping (_ result: NetworkResult<T>) -> Void) {
         let (coustomHeaders, requestPath, encoding) = processParameters(self.authorization, request)
-
-        var dataResponse: DataResponse<Any>!
-        let decodeGroup = DispatchGroup()
-        decodeGroup.enter()
+        
         alamofireManager.request(requestPath, method: request.method, parameters: request.parameter, encoding: encoding, headers: coustomHeaders).responseJSON {  [unowned self] response in
-            guard response.response != nil else {
-                let error = NetworkError.networkErrorFailing
-                let result = NetworkResult<T>.error(error)
-                complete(result)
-                return
-            }
-
+            // 日志
             if self.isShowLog == true {
                 print("http respond info \(response)")
             }
-
-            dataResponse = response
-            decodeGroup.leave()
-        }
-
-        decodeGroup.notify(queue: DispatchQueue.main) {
-            let result = dataResponse.result
-            let statusCode = dataResponse.response!.statusCode
-
-            if let error: NSError = result.error as NSError?, error.domain == NSURLErrorDomain && error.code == NSURLErrorTimedOut {
-                let error = NetworkError.networkTimedOut
-                let result = NetworkResult<T>.error(error)
-                complete(result)
-                return
-            } else if let error = result.error as NSError?, error.domain == NSURLErrorDomain && error.code != NSURLErrorTimedOut {
-                let error = NetworkError.networkErrorFailing
-                let result = NetworkResult<T>.error(error)
-                complete(result)
-                return
-            }
-            // 状态码正常且需要转换数据
-            if statusCode >= 200 && statusCode < 300 && T.ResponseModel.self != Empty.self {
-                if let datas = result.value as? [Any], let models = Mapper<T.ResponseModel>().mapArray(JSONObject: datas) {
-                    let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: models, message: nil, sourceData: result.value)
-                    let result = NetworkResult.success(fullResponse)
+            // 错误处理
+            guard response.result.isSuccess, let responseData = response.response else {
+                if let error: NSError = response.result.error as NSError?, error.domain == NSURLErrorDomain && error.code == NSURLErrorTimedOut {
+                    let error = NetworkError.networkTimedOut
+                    let result = NetworkResult<T>.error(error)
                     complete(result)
-                }
-
-                if let data = result.value as? [String: Any], let model = Mapper<T.ResponseModel>().map(JSON: data) {
-                    let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: model, models: [], message: nil, sourceData: result.value)
-                    let result = NetworkResult<T>.success(fullResponse)
+                } else {
+                    let error = NetworkError.networkErrorFailing
+                    let result = NetworkResult<T>.error(error)
                     complete(result)
                 }
                 return
             }
-            // 状态码正常但是不需要转换数据
-            if statusCode >= 200 && statusCode < 300 && T.ResponseModel.self == Empty.self {
-                let message = self.getSuccessMessage(result: result)
-                let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: message, sourceData: result.value)
-                let result = NetworkResult<T>.success(fullResponse)
-                complete(result)
+            // 请求处理
+            DispatchQueue.main.async(execute: {
+                let result = response.result
+                let statusCode = responseData.statusCode
+                
+                var resultModel: TBNetworkResultModel<T>
+                if var model = Mapper<TBNetworkResultModel<T>>().map(JSONObject: result.value) {
+                    resultModel = model
+                } else {
+                    resultModel = TBNetworkResultModel<T>.init()
+                }
+                resultModel.statusCode = statusCode
+                resultModel.sourceData = result.value
+                
+                /// 特殊状态码处理 - 200表示请求成功
+                switch statusCode {
+                case 200:
+                    if let _ = Mapper<TBNetworkResultModel<T>>().map(JSONObject: result.value) {
+                        if resultModel.code == 0 {
+                            let result = NetworkResult<T>.success(resultModel)
+                            complete(result)
+                        } else {
+                            let result = NetworkResult<T>.failure(resultModel)
+                            complete(result)
+                        }
+                    } else {
+                        let result = NetworkResult<T>.failure(resultModel)
+                        complete(result)
+                    }
+                case 401:
+                    // 401 - Token过期
+                    let result = NetworkResult<T>.failure(resultModel)
+                    complete(result)
+                    NotificationCenter.default.post(name: NSNotification.Name.Network.Illicit, object: nil)
+                case 503:
+                    // 503 - 服务器异常
+                    let result = NetworkResult<T>.failure(resultModel)
+                    complete(result)
+                    NotificationCenter.default.post(name: NSNotification.Name.Network.HostDown, object: nil)
+                default:
+                    let result = NetworkResult<T>.failure(resultModel)
+                    complete(result)
+                }
                 return
-            }
-            // 特殊的状态码
-            if statusCode == 401 {
-                NotificationCenter.default.post(name: NSNotification.Name.Network.Illicit, object: nil)
-            }
-            // 错误信息的处理
-            let message: String? = self.getErrorMessage(result: result)
-            let fullResponse = NetworkFullResponse<T>(statusCode: statusCode, model: nil, models: [], message: message, sourceData: result.value)
-            let resultResponse = NetworkResult<T>.failure(fullResponse)
-            complete(resultResponse)
+            })
         }
+        
     }
-
+    
     private func processParameters<T: NetworkRequest>(_ authorization: String?, _ request: T) -> (HTTPHeaders, String, ParameterEncoding) {
         guard let rootURL = self.rootURL else {
             fatalError("Network request data error uninitialized, unallocate authorization.")
         }
-
+        
         let requestPath = rootURL + request.urlPath
         var coustomHeaders: HTTPHeaders = ["Accept": "application/json"]
         if let authorization = self.authorization {
             let token = "Bearer " + authorization
             coustomHeaders.updateValue(token, forKey: "Authorization")
         }
-
+        
         var encoding: ParameterEncoding!
         request.method == .get ? (encoding = URLEncoding.default) : (encoding = JSONEncoding.default)
-
+        
         if self.isShowLog == true {
             print("\nRootURL:\(requestPath)\nAuthorization: " + (coustomHeaders["Authorization"] ?? "nil") + "\nRequestMethod:\(request.method.rawValue)\nParameters:\n\(request.parameter)\n")
         }
         return (coustomHeaders, requestPath, encoding)
     }
-
+    
     /// 和服务器间的文本请求
     ///
     /// - Parameters:
@@ -241,21 +271,21 @@ public class RequestNetworkData: NSObject {
     /// - Throws: 错误状态,如果未成功配置根地址会抛错
     @discardableResult
     public func textRequest(method: HTTPMethod, path: String?, parameter: Dictionary<String, Any>?, complete: @escaping (_ responseData: NetworkResponse?, _ responseStatus: Bool) -> Void) throws -> DataRequest {
-
+        
         let (coustomHeaders, requestPath) = try processParameters(self.authorization, path)
-
+        
         if self.isShowLog == true {
             let authorization: String = self.authorization ?? "nil"
             print("\nRootURL:\(requestPath)\nAuthorization: Bearer " + (authorization) + "\nRequestMethod:\(method)\nParameters:\n\(parameter)\n")
         }
-
+        
         var encoding: ParameterEncoding!
         if method == .post {
             encoding = JSONEncoding.default
         } else {
             encoding = URLEncoding.default
         }
-
+        
         return alamofireManager.request(requestPath, method: method, parameters: parameter, encoding: encoding, headers: coustomHeaders).responseJSON { [unowned self] response in
             if self.isShowLog == true {
                 print("http respond info \(response)")
@@ -284,6 +314,11 @@ public class RequestNetworkData: NSObject {
                 complete("网络请求错误", false)
                 return
             }
+            if serverResponse.statusCode == 503 {
+                NotificationCenter.default.post(name: NSNotification.Name.Network.HostDown, object: nil)
+                complete("网络请求错误", false)
+                return
+            }
             guard let responseInfoDic = response.result.value as? Dictionary<String, Array<String>> else {
                 complete(response.result.value, responseStatus)
                 return
@@ -295,18 +330,18 @@ public class RequestNetworkData: NSObject {
             complete(response.result.value, responseStatus)
         }
     }
-
+    
     private func processParameters(_ authorization: String?, _ path: String?) throws -> (HTTPHeaders?, String) {
         guard let rootURL = self.rootURL else {
             throw RquestNetworkDataError.uninitialized
         }
-
+        
         var coustomHeaders: HTTPHeaders = ["Accept": "application/json"]
         if let authorization = authorization {
             let token = "Bearer " + authorization
             coustomHeaders.updateValue(token, forKey: "Authorization")
         }
-
+        
         var requestPath: String = ""
         if let path = path {
             requestPath = rootURL + path
@@ -316,7 +351,7 @@ public class RequestNetworkData: NSObject {
         return (coustomHeaders, requestPath)
     }
     
-    fileprivate func getSuccessMessage(result: Result<Any>) -> String? {
+    fileprivate func processSuccessMessage(result: Result<Any>) -> String? {
         var message: String? = nil
         
         // json -> ["message": ["value1", "value2"...]]
@@ -348,7 +383,7 @@ public class RequestNetworkData: NSObject {
         return message
     }
     
-    fileprivate func getErrorMessage(result: Result<Any>) -> String? {
+    fileprivate func processErrorMessage(result: Result<Any>) -> String? {
         var message: String? = nil
         
         // json -> ["message": ["value1", "value2"...]]
@@ -393,5 +428,6 @@ public class RequestNetworkData: NSObject {
         
         return message
     }
-
+    
 }
+

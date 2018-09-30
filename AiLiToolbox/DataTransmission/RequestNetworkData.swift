@@ -84,6 +84,7 @@ public struct TBNetworkResultModel<T: NetworkRequest>: Mappable {
     
     public var statusCode: Int = 0
     public var sourceData: Any?
+    public var data: Any?
     
     init() {
         
@@ -96,6 +97,7 @@ public struct TBNetworkResultModel<T: NetworkRequest>: Mappable {
         message <- map["message"]
         model <- map["data"]
         models <- map["data"]
+        data <- map["data"]
     }
     
 }
